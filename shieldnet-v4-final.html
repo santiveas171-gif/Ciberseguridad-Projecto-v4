@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ShieldNet v4 — CBTIs 189</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#04060e;--bg2:#080d1a;--bg3:#0c1220;--bg4:#111828;
+  --g:#00ffa3;--b:#3b82f6;--r:#f43f5e;--a:#f59e0b;--p:#8b5cf6;--c:#06b6d4;
+  --text:#eef2ff;--m:#4a5a80;--m2:#7a8eb8;
+  --brd:rgba(255,255,255,0.06);
+  --font:'Lexend',sans-serif;
+  --display:'Bebas Neue',cursive;
+  --mono:'JetBrains Mono',monospace;
+  --sw:240px;
+  --fs:13px; --fs-sm:11px; --fs-lg:15px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:14px;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;line-height:1.5;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--g);border-radius:2px;}
+
+/* ═══════ COVER ═══════ */
+#cover{
+  position:fixed;inset:0;z-index:500;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;transition:opacity 0.7s,transform 0.7s;
+}
+#cover.hide{opacity:0;transform:translateY(-20px);pointer-events:none;}
+.cv-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,163,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,163,0.04) 1px,transparent 1px);background-size:44px 44px;animation:gp 8s linear infinite;}
+@keyframes gp{0%,100%{opacity:.4}50%{opacity:1}}
+.cv-scan{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g),transparent);animation:sc 2.5s linear infinite;opacity:.5;}
+@keyframes sc{0%{top:-1px}100%{top:100%}}
+.cv-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,163,0.06),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation:gw 4s ease-in-out infinite;}
+@keyframes gw{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.1)}}
+#particles{position:absolute;inset:0;pointer-events:none;}
+.pt{position:absolute;background:var(--g);border-radius:50%;animation:fl var(--d,8s) linear var(--dl,0s) infinite;opacity:0;}
+@keyframes fl{0%{transform:translateY(100vh);opacity:0}10%{opacity:.7}90%{opacity:.7}100%{transform:translateY(-80px) translateX(var(--dx,20px));opacity:0}}
+.cv-cnt{position:relative;z-index:2;text-align:center;padding:1.5rem;}
+.cv-badge{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;color:var(--g);border:1px solid rgba(0,255,163,.3);border-radius:4px;padding:5px 12px;margin-bottom:1.2rem;background:rgba(0,255,163,.05);animation:fu .6s .2s both;}
+.cv-badge::before{content:'';width:5px;height:5px;background:var(--g);border-radius:50%;animation:bk 1.5s infinite;}
+.cv-title{font-family:var(--display);font-size:clamp(4rem,18vw,10rem);line-height:.9;letter-spacing:2px;animation:fu .6s .3s both;}
+.cv-title .glt{text-shadow:0 0 30px rgba(0,255,163,.5);color:var(--g);}
+.cv-sub{font-size:clamp(.7rem,2.5vw,.9rem);color:var(--m2);font-weight:300;letter-spacing:3px;text-transform:uppercase;margin:1rem 0 1.8rem;animation:fu .6s .4s both;}
+.cv-enter{position:relative;display:inline-flex;align-items:center;gap:10px;background:transparent;border:1px solid var(--g);color:var(--g);font-family:var(--font);font-size:12px;font-weight:600;padding:12px 32px;border-radius:4px;cursor:pointer;overflow:hidden;letter-spacing:2px;text-transform:uppercase;transition:color .3s;animation:fu .6s .5s both;}
+.cv-enter::before{content:'';position:absolute;inset:0;background:var(--g);transform:translateX(-101%);transition:transform .3s ease;}
+.cv-enter:hover::before{transform:translateX(0);}
+.cv-enter span{position:relative;z-index:1;}
+@keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ═══════ APP ═══════ */
+#app{display:flex;min-height:100vh;opacity:0;transition:opacity .5s .2s;}
+#app.on{opacity:1;}
+.progress{position:fixed;top:0;left:0;height:2px;background:var(--g);z-index:999;transition:width .1s;width:0%;}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:var(--sw);
+  background:rgba(4,6,14,.98);border-right:1px solid var(--brd);
+  backdrop-filter:blur(20px);z-index:100;
+  display:flex;flex-direction:column;overflow-y:auto;
+  transition:transform .3s;
+}
+.logo-w{padding:1rem 1.2rem .8rem;border-bottom:1px solid var(--brd);}
+.logo-row{display:flex;align-items:center;gap:8px;}
+.logo-ico{width:34px;height:34px;border-radius:7px;background:var(--g);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-ico svg{width:18px;height:18px;}
+.logo-nm{font-family:var(--display);font-size:19px;letter-spacing:2px;}
+.logo-vr{margin-top:6px;font-family:var(--mono);font-size:9px;color:var(--g);display:flex;align-items:center;gap:5px;}
+.logo-vr::before{content:'';width:4px;height:4px;background:var(--g);border-radius:50%;animation:bk 2s infinite;}
+.nav-sec{padding:.8rem .7rem 0;}
+.nav-lbl{font-size:9px;font-family:var(--mono);letter-spacing:2px;text-transform:uppercase;color:var(--m);padding:0 .5rem;margin-bottom:3px;}
+.nb{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border-radius:7px;border:none;background:none;color:var(--m2);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;text-align:left;transition:all .18s;}
+.nb:hover{color:var(--text);background:rgba(255,255,255,.04);}
+.nb.active{color:var(--g);background:rgba(0,255,163,.07);border:1px solid rgba(0,255,163,.12);}
+.nb .ni{width:18px;text-align:center;font-size:13px;flex-shrink:0;}
+.chip{margin-left:auto;font-size:9px;font-family:var(--mono);padding:2px 6px;border-radius:3px;}
+.chr{background:rgba(244,63,94,.15);color:var(--r);}
+.chg{background:rgba(0,255,163,.12);color:var(--g);}
+.chp{background:rgba(139,92,246,.15);color:var(--p);}
+.sb-ft{margin-top:auto;padding:.8rem 1.2rem;border-top:1px solid var(--brd);}
+.sb-st{display:flex;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);color:var(--m);}
+.sb-dot{width:5px;height:5px;border-radius:50%;background:var(--g);box-shadow:0 0 5px var(--g);animation:bk 2.5s infinite;}
+.sb-sr{font-size:9px;font-family:var(--mono);color:var(--m);margin-top:4px;line-height:1.8;}
+.sb-sr span{color:var(--b);}
+
+/* MAIN */
+.main{margin-left:var(--sw);min-height:100vh;}
+.topbar{position:sticky;top:0;z-index:50;height:46px;padding:0 1.5rem;background:rgba(4,6,14,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between;}
+.tb-bc{font-family:var(--mono);font-size:11px;display:flex;align-items:center;gap:6px;}
+.tb-root{color:var(--m);}
+.tb-cur{color:var(--g);}
+.tb-r{display:flex;gap:6px;}
+.tbb{padding:5px 11px;border-radius:5px;font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.08);color:var(--b);transition:all .18s;}
+.tbb:hover{background:rgba(59,130,246,.15);}
+.tbb.g{border-color:rgba(0,255,163,.25);background:rgba(0,255,163,.07);color:var(--g);}
+.tbb.g:hover{background:rgba(0,255,163,.14);}
+.ham{display:none;position:fixed;top:7px;left:7px;z-index:300;background:var(--bg2);border:1px solid var(--brd);border-radius:6px;padding:6px 9px;cursor:pointer;font-size:16px;color:var(--text);}
+
+/* PAGES */
+.page{display:none;padding:1.5rem 1.5rem 4rem;animation:pi .25s ease;}
+.page.active{display:block;}
+@keyframes pi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* COMMON */
+.eyebrow{font-size:9px;font-family:var(--mono);letter-spacing:2.5px;text-transform:uppercase;color:var(--g);margin-bottom:5px;}
+.pg-title{font-family:var(--display);font-size:clamp(1.8rem,5vw,2.8rem);letter-spacing:2px;line-height:1;margin-bottom:6px;}
+.pg-sub{font-size:12px;color:var(--m2);max-width:560px;line-height:1.7;margin-bottom:1.5rem;}
+.divider{border:none;border-top:1px solid var(--brd);margin:1.5rem 0;}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:1.2rem;transition:border-color .2s,transform .2s;}
+.card:hover{border-color:rgba(59,130,246,.2);transform:translateY(-1px);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;}
+.tag{display:inline-flex;align-items:center;font-size:9px;font-family:var(--mono);padding:2px 8px;border-radius:3px;font-weight:600;}
+.tg{background:rgba(0,255,163,.1);border:1px solid rgba(0,255,163,.2);color:var(--g);}
+.tb{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:var(--b);}
+.tr{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);color:var(--r);}
+.ta{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:var(--a);}
+.tp{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);color:var(--p);}
+
+/* ═══ INICIO ═══ */
+.ticker{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:7px 12px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;overflow:hidden;}
+.t-lbl{font-family:var(--mono);font-size:8px;color:var(--a);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);padding:2px 7px;border-radius:3px;flex-shrink:0;}
+.t-txt{font-size:10px;color:var(--m2);white-space:nowrap;animation:tk 30s linear infinite;}
+@keyframes tk{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.hero{position:relative;border:1px solid var(--brd);border-radius:12px;padding:1.8rem;margin-bottom:1rem;overflow:hidden;background:linear-gradient(135deg,rgba(0,255,163,.03),rgba(59,130,246,.03));}
+.hero::before{content:'';position:absolute;top:-50px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,163,.07),transparent 70%);pointer-events:none;}
+.hero-ey{display:inline-flex;align-items:center;gap:6px;margin-bottom:1rem;background:rgba(0,255,163,.07);border:1px solid rgba(0,255,163,.2);color:var(--g);border-radius:100px;padding:4px 12px;font-size:10px;font-family:var(--mono);}
+.hero-ey::before{content:'';width:5px;height:5px;background:var(--g);border-radius:50%;animation:bk 2s infinite;}
+.hero h1{font-family:var(--display);font-size:clamp(2rem,6vw,3.5rem);letter-spacing:2px;line-height:1;margin-bottom:1rem;}
+.hero h1 em{font-style:normal;color:var(--g);}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:1.5rem;margin-top:1rem;}
+.ht p{font-size:12px;color:var(--m2);line-height:1.8;margin-bottom:.7rem;}
+.ht strong{color:var(--text);}
+.hl{color:var(--g);}
+.pillars{display:flex;flex-direction:column;gap:6px;}
+.pillar{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:9px 11px;transition:border-color .2s;}
+.pillar:hover{border-color:rgba(0,255,163,.2);}
+.pi{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.pig{background:rgba(0,255,163,.1);}
+.pib{background:rgba(59,130,246,.1);}
+.pir{background:rgba(244,63,94,.1);}
+.pip{background:rgba(139,92,246,.1);}
+.pillar h4{font-size:11px;font-weight:700;margin-bottom:1px;}
+.pillar p{font-size:10px;color:var(--m2);}
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--brd);border:1px solid var(--brd);border-radius:10px;overflow:hidden;margin-bottom:1rem;}
+.stat{background:var(--bg2);padding:1rem .8rem;text-align:center;}
+.sn{font-family:var(--mono);font-size:1.3rem;font-weight:700;color:var(--g);margin-bottom:2px;line-height:1;}
+.sl{font-size:10px;color:var(--m2);line-height:1.3;margin-bottom:2px;}
+.ss{font-size:8px;color:var(--m);font-family:var(--mono);}
+.qc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-bottom:1.5rem;}
+.qc{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:1.1rem;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:6px;}
+.qc:hover{border-color:rgba(0,255,163,.25);transform:translateY(-2px);background:var(--bg3);}
+.qci{font-size:20px;}
+.qct{font-size:12px;font-weight:700;}
+.qcd{font-size:11px;color:var(--m2);line-height:1.5;}
+.qca{font-size:10px;color:var(--g);font-family:var(--mono);}
+
+/* QUIZ */
+.quiz-wrap{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:1.5rem;margin-top:1.5rem;}
+.quiz-head h3{font-family:var(--display);font-size:1.4rem;letter-spacing:1px;margin-bottom:3px;}
+.quiz-head p{font-size:11px;color:var(--m2);margin-bottom:1rem;}
+.qbar-w{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-bottom:1rem;}
+.qbar{height:100%;background:var(--g);border-radius:2px;transition:width .4s;}
+.quiz-q{font-size:13px;font-weight:600;margin-bottom:.8rem;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:6px;margin-bottom:1rem;}
+.qopt{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:10px 13px;cursor:pointer;transition:all .18s;font-size:12px;}
+.qopt:hover{border-color:rgba(0,255,163,.25);background:var(--bg4);}
+.qopt.ok{border-color:var(--g);background:rgba(0,255,163,.07);color:var(--g);}
+.qopt.no{border-color:var(--r);background:rgba(244,63,94,.07);color:var(--r);}
+.qopt.dis{pointer-events:none;opacity:.5;}
+.qopt.ok.dis,.qopt.no.dis{opacity:1;}
+.ql{width:22px;height:22px;border-radius:5px;background:var(--bg4);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;flex-shrink:0;}
+.qfb{padding:10px 13px;border-radius:8px;font-size:11.5px;display:none;line-height:1.6;}
+.qfb.show{display:block;}
+.qfb.ok{background:rgba(0,255,163,.07);border:1px solid rgba(0,255,163,.2);color:var(--g);}
+.qfb.no{background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.2);color:var(--r);}
+.quiz-nav{display:flex;align-items:center;justify-content:space-between;margin-top:1rem;}
+.quiz-prog{font-family:var(--mono);font-size:10px;color:var(--m);}
+.qbtn{padding:8px 18px;border-radius:7px;border:none;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:600;transition:all .2s;}
+.qbtn-next{background:var(--g);color:#04060e;}
+.qbtn-next:hover{opacity:.85;}
+.qbtn-next:disabled{opacity:.3;cursor:default;}
+.quiz-score{text-align:center;padding:1.5rem 0;}
+.qs-n{font-family:var(--display);font-size:4rem;letter-spacing:2px;color:var(--g);}
+.qs-t{font-size:12px;color:var(--m2);margin-top:4px;}
+
+/* ═══ ESTADÍSTICAS ═══ */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-bottom:1.2rem;}
+.sh{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:1.2rem;text-align:center;position:relative;overflow:hidden;transition:transform .2s;}
+.sh:hover{transform:translateY(-2px);}
+.sh::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sh-g::before{background:linear-gradient(90deg,transparent,var(--g),transparent);}
+.sh-b::before{background:linear-gradient(90deg,transparent,var(--b),transparent);}
+.sh-r::before{background:linear-gradient(90deg,transparent,var(--r),transparent);}
+.sh-a::before{background:linear-gradient(90deg,transparent,var(--a),transparent);}
+.sh-p::before{background:linear-gradient(90deg,transparent,var(--p),transparent);}
+.sh-c::before{background:linear-gradient(90deg,transparent,var(--c),transparent);}
+.sh-n{font-family:var(--mono);font-size:1.6rem;font-weight:700;margin-bottom:3px;line-height:1;}
+.sh-g .sh-n{color:var(--g);}
+.sh-b .sh-n{color:var(--b);}
+.sh-r .sh-n{color:var(--r);}
+.sh-a .sh-n{color:var(--a);}
+.sh-p .sh-n{color:var(--p);}
+.sh-c .sh-n{color:var(--c);}
+.sh-l{font-size:11px;color:var(--m2);line-height:1.4;margin-bottom:3px;}
+.sh-s{font-size:8px;color:var(--m);font-family:var(--mono);}
+
+/* METER */
+.meter-box{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:1.5rem;margin-top:1.2rem;}
+.meter-box h3{font-family:var(--display);font-size:1.3rem;letter-spacing:1px;margin-bottom:3px;}
+.meter-box p{font-size:11px;color:var(--m2);margin-bottom:1.2rem;}
+.mi{margin-bottom:10px;}
+.mi label{display:flex;justify-content:space-between;font-size:11px;color:var(--m2);margin-bottom:4px;font-family:var(--mono);}
+.mbar{height:7px;background:var(--bg4);border-radius:4px;overflow:hidden;}
+.mfill{height:100%;border-radius:4px;transition:width 1.2s cubic-bezier(.16,1,.3,1);}
+
+/* ═══ FUNDAMENTOS ═══ */
+.acc{border:1px solid var(--brd);border-radius:9px;overflow:hidden;margin-bottom:8px;}
+.acc-h{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1rem;background:var(--bg2);cursor:pointer;user-select:none;transition:background .18s;}
+.acc-h:hover{background:var(--bg3);}
+.acc-hl{display:flex;align-items:center;gap:8px;}
+.acc-h h3{font-size:13px;font-weight:700;}
+.acc-arr{font-size:10px;color:var(--m);transition:transform .3s;}
+.acc.open .acc-arr{transform:rotate(180deg);}
+.acc-b{display:none;padding:1.2rem;background:var(--bg3);border-top:1px solid var(--brd);font-size:12px;color:var(--m2);line-height:1.8;}
+.acc.open .acc-b{display:block;}
+.acc-b h4{font-size:12px;font-weight:700;color:var(--text);margin:10px 0 4px;}
+.acc-b ul{padding-left:1.1rem;margin:5px 0;}
+.acc-b li{margin-bottom:4px;}
+.acc-b code{font-family:var(--mono);font-size:10px;background:var(--bg4);border:1px solid var(--brd);padding:2px 7px;border-radius:4px;color:var(--g);}
+.nbox{margin-top:10px;padding:9px 12px;border-radius:7px;font-size:11.5px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);color:var(--a);}
+.cmd{background:var(--bg);border:1px solid var(--brd);border-radius:7px;padding:10px 14px;margin:8px 0;font-family:var(--mono);font-size:11px;color:var(--g);line-height:2;}
+.cmt{color:var(--m);}
+.os-t{width:100%;border-collapse:collapse;font-size:11px;margin-top:.8rem;}
+.os-t th{background:var(--bg4);padding:7px 10px;text-align:left;font-weight:700;font-size:10px;border:1px solid var(--brd);color:var(--m2);font-family:var(--mono);}
+.os-t td{padding:7px 10px;border:1px solid var(--brd);background:var(--bg2);color:var(--m2);}
+.os-t tr:hover td{background:var(--bg3);}
+.gc{color:var(--g);}
+.rc{color:var(--r);}
+.ac{color:var(--a);}
+
+/* ═══ AMENAZAS ═══ */
+.ttabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.2rem;}
+.ttab{padding:6px 13px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--brd);background:var(--bg2);color:var(--m2);cursor:pointer;transition:all .18s;font-family:var(--mono);}
+.ttab:hover{color:var(--text);}
+.ttab.active{background:rgba(244,63,94,.1);border-color:rgba(244,63,94,.3);color:var(--r);}
+.tpanel{display:none;}
+.tpanel.active{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:.8rem;animation:pi .28s ease;}
+.tc{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:1.2rem;border-left:3px solid var(--r);transition:all .2s;}
+.tc:hover{transform:translateY(-2px);}
+.tc-cat{font-size:9px;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;color:var(--r);margin-bottom:6px;}
+.tc h3{font-size:13px;font-weight:700;margin-bottom:6px;}
+.tc p{font-size:11.5px;color:var(--m2);line-height:1.7;margin-bottom:8px;}
+.tc-tip{font-size:11px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);color:var(--a);padding:7px 11px;border-radius:6px;line-height:1.6;}
+.tc-stat{font-size:9px;font-family:var(--mono);color:var(--m);margin-top:6px;border-top:1px solid var(--brd);padding-top:6px;}
+.tc-stat span{color:var(--c);}
+
+/* ═══ CONSEJOS ═══ */
+.tip{display:flex;gap:1.2rem;align-items:flex-start;background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:1.2rem;margin-bottom:8px;transition:all .2s;}
+.tip:hover{border-color:rgba(0,255,163,.2);transform:translateX(3px);}
+.tip-l{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;}
+.tip-n{width:32px;height:32px;border-radius:7px;background:rgba(0,255,163,.08);border:1px solid rgba(0,255,163,.2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--g);}
+.tip-lv{font-size:8px;font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;}
+.crit{color:var(--r);}.high{color:var(--a);}.med{color:var(--b);}
+.tip-r h3{font-size:13px;font-weight:700;margin-bottom:5px;}
+.tip-r p{font-size:12px;color:var(--m2);line-height:1.7;margin-bottom:6px;}
+.tip-ex{font-family:var(--mono);font-size:10px;background:var(--bg4);border:1px solid var(--brd);padding:6px 10px;border-radius:6px;color:var(--g);}
+.tip-imp{font-size:9px;font-family:var(--mono);background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.15);color:var(--b);padding:3px 9px;border-radius:4px;display:inline-block;margin-top:5px;}
+
+/* ═══ CONTRASEÑAS ═══ */
+.pwd-box{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:1.5rem;margin-bottom:1.2rem;}
+.pwd-box h3{font-size:14px;font-weight:700;margin-bottom:3px;}
+.pwd-box>p{font-size:11.5px;color:var(--m2);margin-bottom:1rem;}
+.pwd-in{width:100%;padding:10px 13px;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .2s;margin-bottom:10px;letter-spacing:1px;}
+.pwd-in:focus{border-color:rgba(0,255,163,.4);}
+.bw{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-bottom:7px;}
+.bf{height:100%;border-radius:2px;transition:width .4s,background .4s;width:0%;}
+.bm{display:flex;justify-content:space-between;font-size:10px;color:var(--m);font-family:var(--mono);margin-bottom:5px;}
+.pfb{font-size:11.5px;color:var(--m2);min-height:16px;}
+.crit-g{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:10px;}
+.ci{background:var(--bg3);border:1px solid var(--brd);border-radius:6px;padding:7px 9px;font-size:10px;color:var(--m2);font-family:var(--mono);display:flex;align-items:center;gap:5px;transition:all .2s;}
+.ci.met{border-color:rgba(0,255,163,.25);color:var(--g);background:rgba(0,255,163,.04);}
+.pwd-cmp{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.2rem;}
+.pc{background:var(--bg2);border-radius:10px;padding:1.2rem;}
+.pc-bad{border:1px solid rgba(244,63,94,.25);}
+.pc-good{border:1px solid rgba(0,255,163,.25);}
+.pc-lbl{font-size:9px;font-family:var(--mono);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.pc-bad .pc-lbl{color:var(--r);}
+.pc-good .pc-lbl{color:var(--g);}
+.pc-item{font-family:var(--mono);font-size:11.5px;padding:6px 10px;border-radius:6px;background:rgba(255,255,255,.03);margin-bottom:4px;}
+.pc-bad .pc-item{color:var(--r);}
+.pc-good .pc-item{color:var(--g);}
+.pc-note{font-size:10.5px;color:var(--m2);margin-top:7px;line-height:1.6;}
+
+/* ═══ HERRAMIENTAS ═══ */
+.tool{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:1.2rem;transition:all .2s;}
+.tool:hover{border-color:rgba(59,130,246,.25);transform:translateY(-2px);}
+.tool-ico{font-size:22px;margin-bottom:7px;}
+.tool-nm{font-size:13px;font-weight:700;margin-bottom:3px;}
+.tool-tp{font-size:9px;font-family:var(--mono);color:var(--m);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.tool-ds{font-size:11.5px;color:var(--m2);line-height:1.6;margin-bottom:8px;}
+.cost{font-size:9px;font-family:var(--mono);padding:2px 8px;border-radius:4px;}
+.free{background:rgba(0,255,163,.1);border:1px solid rgba(0,255,163,.2);color:var(--g);}
+.paid{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:var(--b);}
+
+/* ═══ GLOSARIO ═══ */
+.glos-s{width:100%;padding:9px 12px;background:var(--bg2);border:1px solid var(--brd);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;transition:border-color .2s;margin-bottom:1rem;}
+.glos-s:focus{border-color:rgba(0,255,163,.35);}
+.glos-item{background:var(--bg2);border:1px solid var(--brd);border-radius:9px;padding:.9rem 1.1rem;display:flex;gap:.9rem;align-items:flex-start;transition:border-color .2s;margin-bottom:6px;}
+.glos-item:hover{border-color:rgba(139,92,246,.2);}
+.glos-term{font-family:var(--mono);font-size:11px;color:var(--p);font-weight:700;min-width:120px;padding-top:2px;}
+.glos-def{font-size:12px;color:var(--m2);line-height:1.65;}
+
+/* ═══ MINIJUEGOS ═══ */
+.games-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;}
+.game-card{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:1.4rem;overflow:hidden;}
+.game-ttl{font-family:var(--display);font-size:1.3rem;letter-spacing:1px;margin-bottom:4px;}
+.game-desc{font-size:11px;color:var(--m2);margin-bottom:1rem;}
+
+/* MEMORY GAME */
+.mem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:.8rem;}
+.mem-card{aspect-ratio:1;border-radius:7px;border:1px solid var(--brd);background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.4rem;transition:all .2s;user-select:none;font-family:var(--mono);font-size:11px;color:transparent;}
+.mem-card.flip{background:var(--bg4);border-color:var(--g);color:var(--text);}
+.mem-card.matched{background:rgba(0,255,163,.1);border-color:var(--g);color:var(--g);}
+.mem-card.nope{border-color:var(--r);background:rgba(244,63,94,.1);}
+.game-score{font-family:var(--mono);font-size:11px;color:var(--m2);margin-bottom:8px;}
+.game-btn{padding:7px 16px;border-radius:6px;border:none;cursor:pointer;font-family:var(--font);font-size:11px;font-weight:600;background:var(--g);color:#04060e;transition:opacity .2s;}
+.game-btn:hover{opacity:.85;}
+
+/* PHISHING DETECTOR */
+.ph-email{background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:1rem;margin-bottom:.8rem;font-size:11.5px;line-height:1.7;}
+.ph-from{font-family:var(--mono);font-size:10px;color:var(--m2);margin-bottom:6px;}
+.ph-subject{font-weight:700;margin-bottom:6px;font-size:12px;}
+.ph-body{color:var(--m2);}
+.ph-link{color:var(--b);text-decoration:underline;cursor:pointer;}
+.ph-btns{display:flex;gap:8px;}
+.ph-btn{flex:1;padding:8px;border-radius:7px;border:none;cursor:pointer;font-family:var(--font);font-size:11px;font-weight:600;transition:all .2s;}
+.ph-real{background:rgba(0,255,163,.1);border:1px solid rgba(0,255,163,.2);color:var(--g);}
+.ph-fake{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);color:var(--r);}
+.ph-real:hover{background:rgba(0,255,163,.18);}
+.ph-fake:hover{background:rgba(244,63,94,.18);}
+.ph-result{padding:8px 12px;border-radius:7px;font-size:11px;margin-top:8px;display:none;line-height:1.6;}
+.ph-result.show{display:block;}
+.ph-result.ok{background:rgba(0,255,163,.07);border:1px solid rgba(0,255,163,.2);color:var(--g);}
+.ph-result.bad{background:rgba(244,63,94,.07);border:1px solid rgba(244,63,94,.2);color:var(--r);}
+
+/* PASSWORD BUILDER */
+.pb-display{font-family:var(--mono);font-size:1.1rem;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:.8rem 1rem;margin-bottom:.8rem;color:var(--g);min-height:48px;word-break:break-all;letter-spacing:1px;}
+.pb-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.8rem;}
+.pb-word{padding:6px 12px;border-radius:6px;background:var(--bg3);border:1px solid var(--brd);font-size:11px;color:var(--m2);cursor:pointer;transition:all .18s;user-select:none;}
+.pb-word:hover,.pb-word.sel{background:rgba(0,255,163,.1);border-color:rgba(0,255,163,.3);color:var(--g);}
+.pb-strength{font-family:var(--mono);font-size:10px;color:var(--m2);margin-bottom:6px;}
+.pb-strength span{color:var(--g);}
+
+/* ═══ EQUIPO ═══ */
+.team-hero{position:relative;border:1px solid var(--brd);border-radius:12px;padding:2rem;background:linear-gradient(135deg,rgba(139,92,246,.04),rgba(59,130,246,.04));overflow:hidden;margin-bottom:1.5rem;text-align:center;}
+.team-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.08),transparent 70%);}
+.school-badge{display:inline-flex;align-items:center;gap:8px;margin-bottom:1rem;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);color:var(--p);border-radius:100px;padding:4px 14px;font-size:10px;font-family:var(--mono);}
+.team-hero h1{font-family:var(--display);font-size:clamp(1.8rem,5vw,3rem);letter-spacing:2px;margin-bottom:6px;}
+.team-hero h1 span{color:var(--p);}
+.team-hero>p{font-size:12px;color:var(--m2);max-width:500px;margin:0 auto 1.2rem;line-height:1.7;}
+
+/* CBTIS LOGO */
+.cbtis-logo{
+  width:90px;height:90px;margin:0 auto 1rem;
+  background:linear-gradient(135deg,#1a237e,#0d47a1);
+  border-radius:50%;border:2px solid rgba(59,130,246,.4);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.cbtis-logo::before{content:'';position:absolute;inset:3px;border-radius:50%;border:1px solid rgba(255,255,255,.15);}
+.cbtis-sigla{font-family:var(--display);font-size:1.2rem;color:#fff;letter-spacing:1px;line-height:1;}
+.cbtis-num{font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.7);letter-spacing:2px;}
+.cbtis-sep{width:30px;height:1px;background:rgba(255,255,255,.3);margin:2px 0;}
+.cbtis-it{font-size:.55rem;color:rgba(255,255,255,.6);font-family:var(--mono);letter-spacing:1px;text-transform:uppercase;}
+
+.prof-card{background:linear-gradient(135deg,rgba(0,255,163,.04),rgba(59,130,246,.04));border:1px solid rgba(0,255,163,.2);border-radius:10px;padding:1.2rem;display:flex;align-items:center;gap:1.2rem;margin-bottom:1.2rem;}
+.prof-av{width:56px;height:56px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,rgba(0,255,163,.15),rgba(59,130,246,.15));border:2px solid rgba(0,255,163,.3);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:1.4rem;color:var(--g);}
+.prof-info h3{font-size:15px;font-weight:700;margin-bottom:2px;}
+.prof-role{font-size:9px;font-family:var(--mono);color:var(--g);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.prof-info p{font-size:11.5px;color:var(--m2);line-height:1.6;}
+
+.members-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin-bottom:1.2rem;}
+.member{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:1.1rem;text-align:center;transition:all .25s;position:relative;overflow:hidden;}
+.member::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p),transparent);opacity:0;transition:opacity .3s;}
+.member:hover{border-color:rgba(139,92,246,.3);transform:translateY(-3px);}
+.member:hover::before{opacity:1;}
+.member.leader{border-color:rgba(0,255,163,.25);}
+.member.leader::before{background:linear-gradient(90deg,transparent,var(--g),transparent);opacity:.5;}
+.member-av{width:50px;height:50px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:1.2rem;letter-spacing:1px;transition:border-color .3s;}
+.av-default{background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(59,130,246,.2));border:2px solid rgba(139,92,246,.25);color:var(--p);}
+.av-leader{background:linear-gradient(135deg,rgba(0,255,163,.2),rgba(59,130,246,.2));border:2px solid rgba(0,255,163,.4);color:var(--g);}
+.av-ui{background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(6,182,212,.2));border:2px solid rgba(59,130,246,.4);color:var(--b);}
+.member-name{font-size:12px;font-weight:700;margin-bottom:2px;}
+.member-role{font-size:9px;font-family:var(--mono);letter-spacing:.5px;text-transform:uppercase;}
+.mr-leader{color:var(--g);}
+.mr-ui{color:var(--b);}
+.mr-default{color:var(--p);}
+.leader-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:var(--mono);background:rgba(0,255,163,.1);border:1px solid rgba(0,255,163,.2);color:var(--g);padding:2px 7px;border-radius:4px;margin-top:4px;}
+
+/* ═══ COMENTARIOS ═══ */
+.comment-form{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;}
+.comment-form h3{font-family:var(--display);font-size:1.3rem;letter-spacing:1px;margin-bottom:4px;}
+.comment-form>p{font-size:11.5px;color:var(--m2);margin-bottom:1rem;}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem;}
+.cf-input{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;transition:border-color .2s;}
+.cf-input:focus{border-color:rgba(0,255,163,.35);}
+.cf-textarea{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;color:var(--text);font-family:var(--font);font-size:12px;outline:none;transition:border-color .2s;resize:vertical;min-height:90px;margin-bottom:.8rem;}
+.cf-textarea:focus{border-color:rgba(0,255,163,.35);}
+.stars-row{display:flex;align-items:center;gap:6px;margin-bottom:.8rem;}
+.stars-row label{font-size:11px;color:var(--m2);}
+.star{font-size:1.3rem;cursor:pointer;transition:transform .15s;color:var(--m);}
+.star.active,.star:hover{color:var(--a);transform:scale(1.2);}
+.cf-submit{padding:9px 24px;border-radius:8px;border:none;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;background:var(--g);color:#04060e;transition:opacity .2s;}
+.cf-submit:hover{opacity:.85;}
+.comments-list{display:flex;flex-direction:column;gap:.8rem;}
+.comment{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:1rem 1.2rem;animation:pi .3s ease;}
+.comment-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.comment-name{font-size:12px;font-weight:700;}
+.comment-stars{font-size:.9rem;}
+.comment-time{font-size:9px;font-family:var(--mono);color:var(--m);}
+.comment-text{font-size:12px;color:var(--m2);line-height:1.65;}
+.no-comments{text-align:center;padding:2rem;color:var(--m2);font-size:12px;}
+
+/* ═══ COMPARTIR ═══ */
+.share-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.share-c{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:1.5rem;}
+.share-c h2{font-family:var(--display);font-size:1.4rem;letter-spacing:1px;margin-bottom:5px;}
+.share-c>p{font-size:11.5px;color:var(--m2);margin-bottom:1.2rem;line-height:1.7;}
+.s-lbl{font-size:9px;font-family:var(--mono);color:var(--m);margin-bottom:4px;display:block;}
+.s-in{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--brd);border-radius:7px;color:var(--text);font-family:var(--mono);font-size:11px;outline:none;transition:border-color .2s;margin-bottom:8px;}
+.s-in:focus{border-color:rgba(0,255,163,.3);}
+.s-btn{width:100%;padding:9px;border-radius:7px;border:none;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:700;transition:opacity .2s;margin-bottom:8px;}
+.s-pri{background:var(--g);color:#04060e;}
+.s-pri:hover{opacity:.85;}
+#qrbox{display:flex;justify-content:center;margin:.8rem 0;}
+#qrbox>div{display:inline-block;background:white;border-radius:9px;padding:12px;}
+.qr-hint{font-size:9px;font-family:var(--mono);color:var(--m);text-align:center;}
+.lp{background:var(--bg3);border:1px solid var(--brd);border-radius:7px;padding:8px 11px;font-family:var(--mono);font-size:10.5px;color:var(--g);word-break:break-all;margin:6px 0;display:none;}
+.copy-btn{width:100%;padding:8px;border-radius:6px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:var(--b);font-family:var(--font);font-size:11px;font-weight:600;cursor:pointer;transition:all .18s;display:none;}
+.copy-btn:hover{background:rgba(59,130,246,.15);}
+.copied{text-align:center;font-size:10px;font-family:var(--mono);color:var(--g);display:none;margin-top:3px;}
+.soc-row{display:flex;flex-direction:column;gap:6px;margin-top:.8rem;}
+.soc-btn{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;text-decoration:none;color:var(--text);}
+.soc-btn:hover{border-color:rgba(255,255,255,.15);transform:translateX(2px);}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);}
+.modal.open{display:flex;}
+.modal-box{background:var(--bg2);border:1px solid var(--brd);border-radius:14px;padding:1.5rem;max-width:320px;width:90%;text-align:center;}
+.modal-box h3{font-family:var(--display);font-size:1.2rem;letter-spacing:1px;margin-bottom:4px;}
+.modal-box p{font-size:11.5px;color:var(--m2);margin-bottom:1rem;}
+#mqr{display:inline-block;background:#fff;border-radius:9px;padding:12px;}
+.mc{margin-top:.8rem;background:var(--bg3);border:1px solid var(--brd);color:var(--text);padding:8px 20px;border-radius:6px;font-family:var(--font);font-size:12px;cursor:pointer;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  :root{--sw:0px;}
+  .sidebar{transform:translateX(-100%);width:260px;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .ham{display:block;}
+  .hero-grid,.g2,.g3,.g4,.stats-grid,.pwd-cmp,.share-grid,.cf-row,.crit-g{grid-template-columns:1fr;}
+  .stat-strip{grid-template-columns:repeat(2,1fr);}
+  .qc-grid{grid-template-columns:repeat(2,1fr);}
+  .page{padding:1rem .9rem 3.5rem;}
+  .topbar{padding:0 .9rem;}
+  .tpanel.active{grid-template-columns:1fr;}
+  .members-grid{grid-template-columns:repeat(2,1fr);}
+  .games-grid{grid-template-columns:1fr;}
+  .mem-grid{grid-template-columns:repeat(4,1fr);}
+}
+@media(max-width:480px){
+  .stat-strip{grid-template-columns:1fr 1fr;}
+  .qc-grid{grid-template-columns:1fr 1fr;}
+  .members-grid{grid-template-columns:repeat(2,1fr);}
+  .pwd-cmp{grid-template-columns:1fr;}
+  .share-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+
+<!-- ══ COVER ══ -->
+<div id="cover">
+  <div class="cv-grid"></div><div class="cv-scan"></div><div class="cv-glow"></div>
+  <div id="particles"></div>
+  <div class="cv-cnt">
+    <div class="cv-badge"><span>CBTIs 189 · 4° Semestre · Matutino A · IT Ciberseguridad</span></div>
+    <div class="cv-title">SHIELD<br><span class="glt">NET</span></div>
+    <div class="cv-sub">Centro de Ciberseguridad · Versión 4.0 · 2026</div>
+    <button class="cv-enter" onclick="enterApp()"><span>⚡</span><span>Ingresar al sitio</span></button>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <button class="ham" onclick="toggleSb()">☰</button>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sb">
+    <div class="logo-w">
+      <div class="logo-row">
+        <div class="logo-ico">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5C16.5 22.15 20 17.25 20 12V6L12 2Z" fill="rgba(4,6,14,.9)" stroke="#04060e" stroke-width="1.5"/>
+            <path d="M9 12l2 2 4-4" stroke="#04060e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="logo-nm">ShieldNet</div>
+      </div>
+      <div class="logo-vr">v4.0 · CBTIs 189 · 2026</div>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-lbl">Principal</div>
+      <button class="nb active" onclick="go('inicio',this)"><span class="ni">🏠</span>Inicio</button>
+      <button class="nb" onclick="go('equipo',this)"><span class="ni">👥</span>Nuestro equipo<span class="chip chp">Gen.1</span></button>
+      <button class="nb" onclick="go('estadisticas',this)"><span class="ni">📊</span>Estadísticas<span class="chip chg">2026</span></button>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-lbl">Aprende</div>
+      <button class="nb" onclick="go('fundamentos',this)"><span class="ni">📘</span>Fundamentos</button>
+      <button class="nb" onclick="go('amenazas',this)"><span class="ni">⚠️</span>Amenazas<span class="chip chr">8</span></button>
+      <button class="nb" onclick="go('consejos',this)"><span class="ni">🛡️</span>Consejos</button>
+      <button class="nb" onclick="go('contrasenas',this)"><span class="ni">🔑</span>Contraseñas</button>
+      <button class="nb" onclick="go('herramientas',this)"><span class="ni">🧰</span>Herramientas</button>
+      <button class="nb" onclick="go('glosario',this)"><span class="ni">📖</span>Glosario</button>
+    </div>
+    <div class="nav-sec">
+      <div class="nav-lbl">Interactivo</div>
+      <button class="nb" onclick="go('minijuegos',this)"><span class="ni">🎮</span>Minijuegos</button>
+      <button class="nb" onclick="go('comentarios',this)"><span class="ni">💬</span>Comentarios</button>
+      <button class="nb" onclick="go('compartir',this)"><span class="ni">📱</span>Compartir / QR</button>
+    </div>
+    <div class="sb-ft">
+      <div class="sb-st"><div class="sb-dot"></div>Datos verificados · 2025–2026</div>
+      <div class="sb-sr">Fuentes: <span>IBM · Verizon DBIR</span><br><span>Check Point · CrowdStrike</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="tb-bc"><span class="tb-root">ShieldNet</span><span style="color:var(--m)">/</span><span class="tb-cur" id="tc">Inicio</span></div>
+      <div class="tb-r">
+        <button class="tbb" onclick="go('minijuegos',null)">🎮 Jugar</button>
+        <button class="tbb g" onclick="openModal()">📱 QR</button>
+      </div>
+    </div>
+
+    <!-- ═══ INICIO ═══ -->
+    <div class="page active" id="p-inicio">
+      <div class="ticker">
+        <span class="t-lbl">2026</span>
+        <div class="t-txt">⚡ 1,968 ataques/semana — +18% vs 2024 · 💸 $4.44M costo promedio de brecha (IBM 2025) · 🎣 90% ataques = phishing · 🔐 2FA bloquea 99.9% · 👤 68% brechas = error humano (Verizon 2025) · 🏥 Salud: $11.2M por brecha · 🇺🇸 EE.UU.: $10.22M récord · &nbsp;&nbsp;⚡ 1,968 ataques/semana — +18% vs 2024 · 💸 $4.44M costo promedio de brecha (IBM 2025) · 🎣 90% ataques = phishing · 🔐 2FA bloquea 99.9% · 👤 68% brechas = error humano (Verizon 2025) ·</div>
+      </div>
+      <div class="hero">
+        <div class="hero-ey">Centro de Ciberseguridad · 2026</div>
+        <h1>Protege tu vida<br>digital ante las<br><em>ciberamenazas</em></h1>
+        <div class="hero-grid">
+          <div class="ht">
+            <p>Vivimos en una era donde <strong>casi toda nuestra vida ocurre en línea.</strong> La ciberseguridad no es solo para expertos: cualquier persona puede adoptar hábitos que la protejan hoy mismo.</p>
+            <p>En 2025 se registraron <span class="hl">3,322 brechas de datos</span> solo en EE.UU. El cibercrimen costará <span class="hl">$10.5 billones USD en 2026</span>. Sin embargo, <strong>la higiene básica previene el 98% de los ataques</strong> (Microsoft).</p>
+          </div>
+          <div class="pillars">
+            <div class="pillar"><div class="pi pig">🔐</div><div><h4>Confidencialidad</h4><p>Solo personas autorizadas acceden a tu info.</p></div></div>
+            <div class="pillar"><div class="pi pib">✅</div><div><h4>Integridad</h4><p>Datos sin alteraciones no autorizadas.</p></div></div>
+            <div class="pillar"><div class="pi pir">⚡</div><div><h4>Disponibilidad</h4><p>Sistemas accesibles cuando los necesitas.</p></div></div>
+            <div class="pillar"><div class="pi pip">👤</div><div><h4>Autenticidad</h4><p>Verificas quién es quién en el mundo digital.</p></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="stat-strip">
+        <div class="stat"><div class="sn" id="c1">$4.44M</div><div class="sl">Costo promedio brecha 2025</div><div class="ss">IBM 2025</div></div>
+        <div class="stat"><div class="sn" id="c2">68%</div><div class="sl">Brechas por error humano</div><div class="ss">Verizon DBIR 2025</div></div>
+        <div class="stat"><div class="sn">241d</div><div class="sl">Ciclo de vida de una brecha</div><div class="ss">IBM Security 2025</div></div>
+        <div class="stat"><div class="sn" id="c3">99.9%</div><div class="sl">Ataques bloqueados con 2FA</div><div class="ss">Microsoft 2025</div></div>
+      </div>
+      <div class="qc-grid">
+        <div class="qc" onclick="go('equipo',null)"><div class="qci">👥</div><div class="qct">Nuestro equipo</div><div class="qcd">Primera gen. CBTIs 189 · IT Ciberseguridad.</div><div class="qca">→ Conocernos</div></div>
+        <div class="qc" onclick="go('amenazas',null)"><div class="qci">⚠️</div><div class="qct">Amenazas</div><div class="qcd">Phishing, ransomware, botnets y más.</div><div class="qca">→ Conocer</div></div>
+        <div class="qc" onclick="go('consejos',null)"><div class="qci">🛡️</div><div class="qct">Consejos</div><div class="qcd">7 pasos concretos sin ser experto.</div><div class="qca">→ Aprender</div></div>
+        <div class="qc" onclick="go('minijuegos',null)"><div class="qci">🎮</div><div class="qct">Minijuegos</div><div class="qcd">Aprende jugando: memoria, detector de phishing y más.</div><div class="qca">→ Jugar</div></div>
+      </div>
+      <!-- QUIZ -->
+      <div class="quiz-wrap">
+        <div class="quiz-head"><h3>🧠 Quiz Rápido</h3><p>5 preguntas para poner a prueba tus conocimientos.</p></div>
+        <div class="qbar-w"><div class="qbar" id="qbar"></div></div>
+        <div id="quiz-cnt"></div>
+      </div>
+    </div>
+
+    <!-- ═══ EQUIPO ═══ -->
+    <div class="page" id="p-equipo">
+      <div class="team-hero">
+        <div class="cbtis-logo"><div class="cbtis-sigla">CBTIs</div><div class="cbtis-sep"></div><div class="cbtis-num">189</div><div class="cbtis-it">IT · Ciberseg.</div></div>
+        <div class="school-badge">🏫 CBTIs 189 · 4° Semestre · Matutino A · 2026</div>
+        <h1>Primera <span>Generación</span><br>de Ciberseguridad</h1>
+        <p>Somos el primer grupo en cursar la especialidad de IT Ciberseguridad en el CBTIs 189. Este sitio es nuestro proyecto de evaluación de período, combinando investigación real y desarrollo web.</p>
+        <div style="display:inline-flex;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);background:rgba(0,255,163,.07);border:1px solid rgba(0,255,163,.15);color:var(--g);border-radius:6px;padding:5px 12px;">⚡ Proyecto de evaluación · IT Ciberseguridad · 2026</div>
+      </div>
+      <div class="prof-card">
+        <div class="prof-av">GO</div>
+        <div class="prof-info">
+          <h3>Prof. Gerardo Ortega</h3>
+          <div class="prof-role">Profesor titular · IT Ciberseguridad</div>
+          <p>Bajo su guía, la primera generación de IT Ciberseguridad del CBTIs 189 desarrolló este proyecto de investigación y desarrollo web como parte de su evaluación de período en el 4° semestre, grupo matutino A.</p>
+        </div>
+      </div>
+      <h2 style="font-family:var(--display);font-size:1.5rem;letter-spacing:2px;margin-bottom:.8rem;">El Equipo</h2>
+      <div class="members-grid">
+        <div class="member leader">
+          <div class="member-av av-leader">SV</div>
+          <div class="member-name">Santiago Veas</div>
+          <div class="member-role mr-leader">Líder del equipo</div>
+          <div class="leader-badge">⭐ Líder</div>
+        </div>
+        <div class="member">
+          <div class="member-av av-ui">JE</div>
+          <div class="member-name">Joshua Elías</div>
+          <div class="member-role mr-ui">Interfaz / UI</div>
+          <div style="display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:var(--mono);background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:var(--b);padding:2px 7px;border-radius:4px;margin-top:4px;">🖥️ UI Lead</div>
+        </div>
+        <div class="member"><div class="member-av av-default">TG</div><div class="member-name">Tomas Garza</div><div class="member-role mr-default">Investigación</div></div>
+        <div class="member"><div class="member-av av-default">RR</div><div class="member-name">Rodrigo Roel</div><div class="member-role mr-default">Investigación</div></div>
+        <div class="member"><div class="member-av av-default">CR</div><div class="member-name">Camila Rosas</div><div class="member-role mr-default">Investigación</div></div>
+        <div class="member"><div class="member-av av-default">AM</div><div class="member-name">Ailyn Martínez</div><div class="member-role mr-default">Investigación</div></div>
+        <div class="member"><div class="member-av av-default">AB</div><div class="member-name">Azua Barrón</div><div class="member-role mr-default">Investigación</div></div>
+        <div class="member"><div class="member-av av-default">FP</div><div class="member-name">Francisco Pérez</div><div class="member-role mr-default">Investigación</div></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:13px;font-weight:700;margin-bottom:.8rem;">📅 Sobre este proyecto</h3>
+        <div style="display:flex;flex-direction:column;gap:.7rem;font-size:11.5px;color:var(--m2);">
+          <div style="display:flex;gap:.8rem;align-items:flex-start;"><span style="color:var(--p);font-family:var(--mono);font-size:10px;min-width:80px;padding-top:2px;">INVESTIGACIÓN</span><span>Recopilación de estadísticas verificadas de fuentes oficiales: IBM, Verizon DBIR, Check Point, CrowdStrike y más.</span></div>
+          <div style="display:flex;gap:.8rem;align-items:flex-start;"><span style="color:var(--b);font-family:var(--mono);font-size:10px;min-width:80px;padding-top:2px;">DISEÑO UI</span><span>Construcción del sitio web enfocado en usuarios sin conocimientos técnicos previos, a cargo de Joshua Elías.</span></div>
+          <div style="display:flex;gap:.8rem;align-items:flex-start;"><span style="color:var(--g);font-family:var(--mono);font-size:10px;min-width:80px;padding-top:2px;">LIDERAZGO</span><span>Coordinación del proyecto y equipo bajo la dirección de Santiago Veas como líder.</span></div>
+          <div style="display:flex;gap:.8rem;align-items:flex-start;"><span style="color:var(--a);font-family:var(--mono);font-size:10px;min-width:80px;padding-top:2px;">EVALUACIÓN</span><span>Presentación como proyecto final de período bajo la supervisión del Prof. Gerardo Ortega. 4° Semestre · Matutino A · 2026.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ESTADÍSTICAS ═══ -->
+    <div class="page" id="p-estadisticas">
+      <div class="eyebrow">Datos verificados · 2025–2026</div>
+      <h1 class="pg-title">Estadísticas Reales</h1>
+      <p class="pg-sub">Cifras de IBM, Verizon DBIR, Check Point, CrowdStrike, ITRC y Microsoft. Datos de 2025 y 2026.</p>
+      <h3 style="font-size:10px;font-weight:700;color:var(--m2);margin-bottom:10px;font-family:var(--mono);letter-spacing:2px;text-transform:uppercase;">Costos y frecuencia</h3>
+      <div class="stats-grid">
+        <div class="sh sh-r"><div class="sh-n">$4.44M</div><div class="sh-l">Costo promedio global de brecha en 2025 — primera bajada en 5 años</div><div class="sh-s">IBM Cost of Data Breach 2025</div></div>
+        <div class="sh sh-a"><div class="sh-n">$10.22M</div><div class="sh-l">Costo promedio brecha en EE.UU. 2025 — récord histórico</div><div class="sh-s">IBM Cost of Data Breach 2025</div></div>
+        <div class="sh sh-b"><div class="sh-n">1,968</div><div class="sh-l">Ataques por semana en 2025 — +18% vs 2024 y +70% vs 2023</div><div class="sh-s">Check Point Research 2025</div></div>
+        <div class="sh sh-g"><div class="sh-n">3,322</div><div class="sh-l">Brechas de datos en EE.UU. en 2025 — nuevo récord histórico</div><div class="sh-s">ITRC Annual Data Breach 2025</div></div>
+        <div class="sh sh-p"><div class="sh-n">241d</div><div class="sh-l">Ciclo de vida promedio de una brecha (detección + contención)</div><div class="sh-s">IBM Security 2025</div></div>
+        <div class="sh sh-c"><div class="sh-n">$1.9M</div><div class="sh-l">Ahorro promedio con uso de IA en seguridad</div><div class="sh-s">IBM Cost of Data Breach 2025</div></div>
+      </div>
+      <hr class="divider">
+      <h3 style="font-size:10px;font-weight:700;color:var(--m2);margin-bottom:10px;font-family:var(--mono);letter-spacing:2px;text-transform:uppercase;">Amenazas y vectores</h3>
+      <div class="stats-grid">
+        <div class="sh sh-r"><div class="sh-n">90%</div><div class="sh-l">De ataques exitosos comienzan con phishing — vector #1</div><div class="sh-s">Fortinet / IBM 2025</div></div>
+        <div class="sh sh-a"><div class="sh-n">44%</div><div class="sh-l">De brechas en 2025 involucraron ransomware o extorsión</div><div class="sh-s">Verizon DBIR 2025</div></div>
+        <div class="sh sh-b"><div class="sh-n">30%</div><div class="sh-l">De brechas con terceros — se duplicó vs año anterior</div><div class="sh-s">Verizon DBIR 2025</div></div>
+        <div class="sh sh-p"><div class="sh-n">22%</div><div class="sh-l">Usan abuso de credenciales como vector inicial</div><div class="sh-s">Verizon DBIR 2025</div></div>
+        <div class="sh sh-g"><div class="sh-n">82%</div><div class="sh-l">De detecciones en 2026 fueron ataques sin malware</div><div class="sh-s">CrowdStrike Threat Report 2026</div></div>
+        <div class="sh sh-c"><div class="sh-n">87%</div><div class="sh-l">Identifican IA como el riesgo de crecimiento más rápido</div><div class="sh-s">WEF Cybersecurity Outlook 2025</div></div>
+      </div>
+      <hr class="divider">
+      <h3 style="font-size:10px;font-weight:700;color:var(--m2);margin-bottom:10px;font-family:var(--mono);letter-spacing:2px;text-transform:uppercase;">Protección</h3>
+      <div class="stats-grid">
+        <div class="sh sh-g"><div class="sh-n">99.9%</div><div class="sh-l">De ataques automáticos bloqueados con 2FA activo</div><div class="sh-s">Microsoft Security 2025</div></div>
+        <div class="sh sh-b"><div class="sh-n">98%</div><div class="sh-l">De ataques prevenibles con higiene básica</div><div class="sh-s">Microsoft Security 2025</div></div>
+        <div class="sh sh-a"><div class="sh-n">34%</div><div class="sh-l">Reducción de costos con IA de seguridad</div><div class="sh-s">IBM 2025</div></div>
+        <div class="sh sh-p"><div class="sh-n">$1.76M</div><div class="sh-l">Menos en costos con Zero Trust implementado</div><div class="sh-s">IBM 2025</div></div>
+        <div class="sh sh-r"><div class="sh-n">$1.14M</div><div class="sh-l">Menos si la brecha se contiene en &lt;200 días</div><div class="sh-s">IBM 2025</div></div>
+        <div class="sh sh-c"><div class="sh-n">$240B</div><div class="sh-l">Gasto global proyectado en ciberseguridad 2026</div><div class="sh-s">SentinelOne / IDC 2026</div></div>
+      </div>
+      <div class="meter-box" id="meterbox">
+        <h3>Riesgo por sector</h3>
+        <p>Costo promedio de brecha por industria en 2025 (IBM). Ordenado de mayor a menor.</p>
+        <div class="mi"><label><span>🏥 Salud</span><span style="color:var(--r)">$11.2M</span></label><div class="mbar"><div class="mfill" data-w="100" style="background:var(--r);width:0%"></div></div></div>
+        <div class="mi"><label><span>💰 Finanzas</span><span style="color:var(--a)">$6.1M</span></label><div class="mbar"><div class="mfill" data-w="54" style="background:var(--a);width:0%"></div></div></div>
+        <div class="mi"><label><span>💊 Farmacéutica</span><span style="color:var(--p)">$5.2M</span></label><div class="mbar"><div class="mfill" data-w="46" style="background:var(--p);width:0%"></div></div></div>
+        <div class="mi"><label><span>💻 Tecnología</span><span style="color:var(--b)">$5.1M</span></label><div class="mbar"><div class="mfill" data-w="45" style="background:var(--b);width:0%"></div></div></div>
+        <div class="mi"><label><span>⚡ Energía</span><span style="color:var(--c)">$4.7M</span></label><div class="mbar"><div class="mfill" data-w="42" style="background:var(--c);width:0%"></div></div></div>
+        <div class="mi"><label><span>📦 Manufactura</span><span style="color:var(--g)">$3.7M</span></label><div class="mbar"><div class="mfill" data-w="33" style="background:var(--g);width:0%"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ FUNDAMENTOS ═══ -->
+    <div class="page" id="p-fundamentos">
+      <div class="eyebrow">Conceptos base</div>
+      <h1 class="pg-title">Fundamentos</h1>
+      <p class="pg-sub">Todo lo que necesitas saber sobre seguridad digital, desde cero.</p>
+      <div class="acc open"><div class="acc-h" onclick="toggleAcc(this)"><div class="acc-hl"><span>🌐</span><h3>HTTP vs HTTPS</h3><span class="tag tb">Esencial</span></div><span class="acc-arr">▼</span></div><div class="acc-b"><h4>HTTP (Puerto 80)</h4><p>Transmite datos en texto plano sin cifrado. Cualquier persona en la red puede interceptar la información.</p><h4>HTTPS (Puerto 443)</h4><p>Versión segura con cifrado TLS. El 🔒 en tu navegador lo confirma. Protege contraseñas y datos de tarjetas.</p><div class="nbox">⚠️ Nunca ingreses datos sensibles en sitios sin HTTPS.</div></div></div>
+      <div class="acc"><div class="acc-h" onclick="toggleAcc(this)"><div class="acc-hl"><span>🔌</span><h3>Puertos de red</h3><span class="tag tg">Importante</span></div><span class="acc-arr">▼</span></div><div class="acc-b"><p>Canal lógico de comunicación. Existen 65,535 puertos.</p><ul><li><code>22</code> SSH · <code>80</code> HTTP · <code>443</code> HTTPS</li><li><code>25</code> SMTP · <code>53</code> DNS · <code>3389</code> RDP</li><li><code>20/21</code> FTP · <code>3306</code> MySQL · <code>143</code> IMAP</li></ul></div></div>
+      <div class="acc"><div class="acc-h" onclick="toggleAcc(this)"><div class="acc-hl"><span>🗺️</span><h3>Nmap — Escaneo de redes</h3><span class="tag tp">Herramienta</span></div><span class="acc-arr">▼</span></div><div class="acc-b"><p>Herramienta estándar para descubrir hosts, puertos y servicios.</p><div class="cmd"><span class="cmt"># Escaneo básico</span><br>nmap 192.168.1.1<br><span class="cmt"># Detectar servicios y SO</span><br>nmap -sV -O 192.168.1.1<br><span class="cmt"># Puertos específicos</span><br>nmap -p 80,443,22 192.168.1.1</div><div class="nbox">⚠️ Solo en redes propias o con permiso. Usarlo sin autorización es ilegal.</div></div></div>
+      <div class="acc"><div class="acc-h" onclick="toggleAcc(this)"><div class="acc-hl"><span>🖥️</span><h3>Windows vs Kali Linux vs macOS</h3><span class="tag ta">Comparativa</span></div><span class="acc-arr">▼</span></div><div class="acc-b"><table class="os-t"><tr><th>Criterio</th><th>Windows 11</th><th>Kali Linux</th><th>macOS</th></tr><tr><td>Facilidad</td><td class="gc">Alta</td><td class="rc">Baja</td><td class="gc">Alta</td></tr><tr><td>Gaming</td><td class="gc">Excelente</td><td class="rc">Mínimo</td><td class="ac">Limitado</td></tr><tr><td>Seguridad</td><td class="ac">Media</td><td class="gc">Alta</td><td class="gc">Muy alta</td></tr><tr><td>Herr. seguridad</td><td class="ac">Limitadas</td><td class="gc">+600</td><td class="ac">Moderadas</td></tr><tr><td>Ideal para</td><td>Oficina/gaming</td><td>Pentesting</td><td>Diseño/dev</td></tr></table></div></div>
+      <div class="acc"><div class="acc-h" onclick="toggleAcc(this)"><div class="acc-hl"><span>🔒</span><h3>Cifrado AES, RSA y TLS</h3><span class="tag tb">Conceptos</span></div><span class="acc-arr">▼</span></div><div class="acc-b"><h4>Simétrico</h4><p>Misma clave para cifrar y descifrar. Rápido. Ej: <code>AES-256</code>, <code>ChaCha20</code>.</p><h4>Asimétrico</h4><p>Par de claves pública/privada. Ej: <code>RSA-2048</code>. Usado en HTTPS y firmas digitales.</p><div class="nbox">💡 AES-256 tardaría más que la edad del universo en romperse por fuerza bruta.</div></div></div>
+    </div>
+
+    <!-- ═══ AMENAZAS ═══ -->
+    <div class="page" id="p-amenazas">
+      <div class="eyebrow">Riesgos digitales</div>
+      <h1 class="pg-title">Amenazas</h1>
+      <p class="pg-sub">Técnicas de ataque con datos reales de 2025–2026 y cómo protegerte.</p>
+      <div class="ttabs">
+        <button class="ttab active" onclick="switchT('ing',this)">Ingeniería social</button>
+        <button class="ttab" onclick="switchT('mal',this)">Malware</button>
+        <button class="ttab" onclick="switchT('red',this)">Red</button>
+        <button class="ttab" onclick="switchT('web',this)">Web</button>
+      </div>
+      <div class="tpanel active" id="tp-ing">
+        <div class="tc"><div class="tc-cat">Ingeniería social</div><h3>Phishing</h3><p>Correos que imitan empresas reales para robar credenciales. Crean urgencia falsa.</p><div class="tc-tip">💡 Verifica el dominio exacto antes de hacer clic. "bancomer-seguro.com" ≠ "bancomer.com".</div><div class="tc-stat">Impacto: <span>90% de ataques inician aquí · IBM 2025</span></div></div>
+        <div class="tc"><div class="tc-cat">Ingeniería social</div><h3>Tailgating</h3><p>Seguir físicamente a alguien autorizado para acceder a zonas restringidas sin credenciales.</p><div class="tc-tip">💡 Nunca permitas que alguien entre contigo a áreas seguras sin identificarse.</div><div class="tc-stat">Contexto: <span>20% de brechas involucra acceso físico · Verizon DBIR</span></div></div>
+        <div class="tc"><div class="tc-cat">Ingeniería social</div><h3>Quid Pro Quo</h3><p>Ofrecer "ayuda técnica" a cambio de credenciales o acceso al sistema.</p><div class="tc-tip">💡 El soporte legítimo NUNCA pide tu contraseña. Verifica por canales oficiales.</div><div class="tc-stat">Contexto: <span>43% de ataques de ing. social · Verizon DBIR</span></div></div>
+        <div class="tc"><div class="tc-cat">Ingeniería social</div><h3>Envenenamiento SEO</h3><p>Sitios maliciosos posicionados en los primeros resultados de búsqueda.</p><div class="tc-tip">💡 Escribe la URL directamente o usa marcadores. Nunca desde anuncios.</div><div class="tc-stat">Contexto: <span>+700% entre 2021–2024 · Check Point Research</span></div></div>
+      </div>
+      <div class="tpanel" id="tp-mal">
+        <div class="tc"><div class="tc-cat">Malware</div><h3>Ransomware</h3><p>Cifra archivos y exige pago. El 44% de brechas en 2025 lo involucraron (Verizon 2025).</p><div class="tc-tip">💡 Backup reciente y desconectado es tu mejor defensa. No pagar no garantiza recuperar los archivos.</div><div class="tc-stat">Impacto: <span>44% brechas 2025 · Recuperación $3.58M · Verizon/Sophos</span></div></div>
+        <div class="tc"><div class="tc-cat">Malware</div><h3>Botnet</h3><p>Red de dispositivos infectados usados para DDoS, spam o minería sin que el dueño lo sepa.</p><div class="tc-tip">💡 Actualiza firmware del router. Cambia contraseñas por defecto. Red separada para IoT.</div><div class="tc-stat">Contexto: <span>Mirai infectó 400,000+ dispositivos · Cloudflare</span></div></div>
+        <div class="tc"><div class="tc-cat">Malware</div><h3>MitMo (Man-in-the-Mobile)</h3><p>Intercepta SMS de 2FA para robar cuentas bancarias y correos electrónicos.</p><div class="tc-tip">💡 Usa apps de autenticación (Google Authenticator) en vez de SMS. Son inmunes a MitMo.</div><div class="tc-stat">Contexto: <span>MitM = 35% de ataques en Wi-Fi público · IBM 2025</span></div></div>
+        <div class="tc"><div class="tc-cat">Malware</div><h3>Troyano</h3><p>Se disfraza de software legítimo. Abre puertas traseras y roba datos.</p><div class="tc-tip">💡 Solo descarga de fuentes oficiales. Evita software pirata.</div><div class="tc-stat">Contexto: <span>86% del malware llega por email · DemandSage 2024</span></div></div>
+      </div>
+      <div class="tpanel" id="tp-red">
+        <div class="tc"><div class="tc-cat">Red</div><h3>DDoS</h3><p>Inunda un servidor con peticiones hasta dejarlo inaccesible. Creció 37% en 2024.</p><div class="tc-tip">💡 Protege tu dispositivo para que no se vuelva parte de una botnet.</div><div class="tc-stat">Contexto: <span>+37% en 2024 · Mayores superaron 3.8 Tbps · Cloudflare</span></div></div>
+        <div class="tc"><div class="tc-cat">Red</div><h3>Man-in-the-Middle</h3><p>El atacante se interpone en la comunicación leyendo o modificando los datos.</p><div class="tc-tip">💡 Usa VPN en Wi-Fi público. Verifica siempre el candado HTTPS.</div><div class="tc-stat">Contexto: <span>35% de ataques en Wi-Fi público · Hoteles y aeropuertos los más riesgosos</span></div></div>
+      </div>
+      <div class="tpanel" id="tp-web">
+        <div class="tc"><div class="tc-cat">Web</div><h3>SQL Injection</h3><p>Código SQL malicioso en formularios web para robar o modificar bases de datos.</p><div class="tc-tip">💡 Desarrolladores: usa consultas parametrizadas. Usuarios: evita sitios sin HTTPS.</div><div class="tc-stat">Contexto: <span>Top 10 OWASP desde 2003 · 22% de brechas web</span></div></div>
+        <div class="tc"><div class="tc-cat">Web</div><h3>Zero-Day</h3><p>Vulnerabilidad desconocida sin parche. Gobiernos pagan millones por ellas.</p><div class="tc-tip">💡 Actualizaciones automáticas cierran vulnerabilidades conocidas. Actívalas.</div><div class="tc-stat">Contexto: <span>29,000+ vulnerabilidades en 2023 — récord · NIST NVD</span></div></div>
+        <div class="tc"><div class="tc-cat">Web</div><h3>XSS</h3><p>Scripts maliciosos en páginas legítimas que roban sesiones y cookies.</p><div class="tc-tip">💡 Usa uBlock Origin. Gestores de contraseñas no autocompletan en sitios clonados.</div><div class="tc-stat">Contexto: <span>XSS en 40% de apps web auditadas · OWASP 2024</span></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ CONSEJOS ═══ -->
+    <div class="page" id="p-consejos">
+      <div class="eyebrow">Guía práctica</div>
+      <h1 class="pg-title">Consejos</h1>
+      <p class="pg-sub">7 acciones concretas ordenadas por urgencia. Sin conocimientos técnicos necesarios.</p>
+      <div class="tip"><div class="tip-l"><div class="tip-n">01</div><span class="tip-lv crit">CRÍTICO</span></div><div class="tip-r"><h3>Activa verificación en dos pasos (2FA)</h3><p>Bloquea el 99.9% de ataques automatizados aunque alguien robe tu contraseña (Microsoft 2025). Actívala en correo, redes sociales y banca.</p><div class="tip-ex">Google Authenticator · Microsoft Authenticator · Authy</div><div class="tip-imp">99.9% de ataques bloqueados · Microsoft 2025</div></div></div>
+      <div class="tip"><div class="tip-l"><div class="tip-n">02</div><span class="tip-lv crit">CRÍTICO</span></div><div class="tip-r"><h3>Contraseñas únicas por servicio</h3><p>Reutilizar contraseñas es el error más común. Un gestor las genera y recuerda por ti.</p><div class="tip-ex">Bitwarden (gratis) · 1Password · KeePass</div><div class="tip-imp">81% de brechas usan contraseñas comprometidas</div></div></div>
+      <div class="tip"><div class="tip-l"><div class="tip-n">03</div><span class="tip-lv high">ALTO</span></div><div class="tip-r"><h3>Mantén el software actualizado</h3><p>Las actualizaciones cierran vulnerabilidades conocidas. Activa las automáticas.</p><div class="tip-ex">Configuración → Windows Update → Automático</div><div class="tip-imp">98% de ataques prevenibles con actualizaciones</div></div></div>
+      <div class="tip"><div class="tip-l"><div class="tip-n">04</div><span class="tip-lv high">ALTO</span></div><div class="tip-r"><h3>Desconfía de correos inesperados</h3><p>El 90% de ataques comienza con phishing. Verifica el remitente y la URL real antes de hacer clic.</p><div class="tip-ex">Hover sobre enlace → ver URL real en barra inferior</div><div class="tip-imp">90% de ataques inician con phishing · 2025</div></div></div>
+      <div class="tip"><div class="tip-l"><div class="tip-n">05</div><span class="tip-lv high">ALTO</span></div><div class="tip-r"><h3>Haz backups regularmente</h3><p>Regla 3-2-1: 3 copias, 2 medios diferentes, 1 fuera del lugar físico. Protege contra ransomware.</p><div class="tip-ex">Google Drive + Disco externo desconectado</div><div class="tip-imp">Recuperación ransomware: $3.58M promedio</div></div></div>
+      <div class="tip"><div class="tip-l"><div class="tip-n">06</div><span class="tip-lv med">MEDIO</span></div><div class="tip-r"><h3>Usa VPN en redes públicas</h3><p>Cafeterías y aeropuertos son zonas de riesgo. Una VPN cifra todo tu tráfico.</p><div class="tip-ex">ProtonVPN (gratis) · Mullvad · NordVPN</div><div class="tip-imp">35% de ataques en Wi-Fi público son MitM</div></div></div>
+      <div class="tip"><div class="tip-l"><div class="tip-n">07</div><span class="tip-lv med">MEDIO</span></div><div class="tip-r"><h3>Revisa permisos de apps</h3><p>Muchas apps piden más permisos de los necesarios. Revoca los innecesarios periódicamente.</p><div class="tip-ex">Ajustes → Privacidad → Permisos (iOS/Android)</div><div class="tip-imp">Solo 17% de pequeñas empresas cifran datos</div></div></div>
+    </div>
+
+    <!-- ═══ CONTRASEÑAS ═══ -->
+    <div class="page" id="p-contrasenas">
+      <div class="eyebrow">Seguridad base</div>
+      <h1 class="pg-title">Contraseñas</h1>
+      <p class="pg-sub">El 81% de las brechas involucran contraseñas débiles. Aprende a crearlas bien.</p>
+      <div class="pwd-box">
+        <h3>🔍 Verificador interactivo</h3>
+        <p>Escribe una contraseña para evaluarla. No se guarda ni se envía.</p>
+        <input type="password" class="pwd-in" id="pwdi" placeholder="Escribe aquí tu contraseña..." oninput="checkPwd(this.value)">
+        <div class="bw"><div class="bf" id="pwdb"></div></div>
+        <div class="bm"><span>Fortaleza</span><span id="pwdl">—</span></div>
+        <div class="pfb" id="pwdfb"></div>
+        <div class="crit-g">
+          <div class="ci" id="ci-l"><span>📏</span>+16 chars</div>
+          <div class="ci" id="ci-u"><span>🔠</span>Mayúsculas</div>
+          <div class="ci" id="ci-lo"><span>🔡</span>Minúsculas</div>
+          <div class="ci" id="ci-n"><span>🔢</span>Números</div>
+          <div class="ci" id="ci-s"><span>🔣</span>Símbolos</div>
+          <div class="ci" id="ci-lg"><span>💪</span>20+ chars</div>
+        </div>
+      </div>
+      <div class="pwd-cmp">
+        <div class="pc pc-bad"><div class="pc-lbl">❌ Evitar</div><div class="pc-item">123456</div><div class="pc-item">pepito2025</div><div class="pc-item">miperro</div><div class="pc-item">qwerty123</div><p class="pc-note">Se descifran en menos de 1 segundo con ataques de diccionario.</p></div>
+        <div class="pc pc-good"><div class="pc-lbl">✅ Usar</div><div class="pc-item">Nub3$-Lago!Azul-77</div><div class="pc-item">T1gr3&Mont@ña#2026</div><div class="pc-item">#Coral!Vient0-52Km</div><div class="pc-item">Luna*Gris@Torre!99</div><p class="pc-note">16+ chars mixtos. Tardarían miles de años en romperse.</p></div>
+      </div>
+    </div>
+
+    <!-- ═══ HERRAMIENTAS ═══ -->
+    <div class="page" id="p-herramientas">
+      <div class="eyebrow">Recursos</div>
+      <h1 class="pg-title">Herramientas</h1>
+      <p class="pg-sub">Software verificado para proteger tu seguridad digital, la mayoría gratuitos.</p>
+      <div class="g4">
+        <div class="tool"><div class="tool-ico">🔐</div><div class="tool-nm">Bitwarden</div><div class="tool-tp">Gestor contraseñas</div><div class="tool-ds">Open source, gratuito, multiplataforma. Genera y almacena contraseñas únicas.</div><span class="cost free">Gratis</span></div>
+        <div class="tool"><div class="tool-ico">🔑</div><div class="tool-nm">Google Authenticator</div><div class="tool-tp">2FA</div><div class="tool-ds">Genera códigos temporales cada 30s. Inmune a ataques MitMo por SMS.</div><span class="cost free">Gratis</span></div>
+        <div class="tool"><div class="tool-ico">🌐</div><div class="tool-nm">ProtonVPN</div><div class="tool-tp">VPN</div><div class="tool-ds">VPN suiza sin límite de datos. No registra actividad. Ideal para Wi-Fi público.</div><span class="cost free">Gratis/Pro</span></div>
+        <div class="tool"><div class="tool-ico">🔍</div><div class="tool-nm">Have I Been Pwned</div><div class="tool-tp">Verificador brechas</div><div class="tool-ds">Revisa si tu correo aparece en bases de datos filtradas. +12 mil millones de registros.</div><span class="cost free">Gratis</span></div>
+        <div class="tool"><div class="tool-ico">🛡️</div><div class="tool-nm">Malwarebytes</div><div class="tool-tp">Anti-malware</div><div class="tool-ds">Detecta amenazas que el antivirus tradicional pasa por alto.</div><span class="cost free">Gratis/Pro</span></div>
+        <div class="tool"><div class="tool-ico">📧</div><div class="tool-nm">ProtonMail</div><div class="tool-tp">Correo cifrado</div><div class="tool-ds">Cifrado extremo a extremo. Sin publicidad. Leyes estrictas de privacidad suiza.</div><span class="cost free">Gratis/Plus</span></div>
+        <div class="tool"><div class="tool-ico">🗺️</div><div class="tool-nm">Nmap</div><div class="tool-tp">Escáner de red</div><div class="tool-ds">Estándar para descubrir dispositivos y puertos. Usado por pentesters.</div><span class="cost free">Gratis</span></div>
+        <div class="tool"><div class="tool-ico">🔥</div><div class="tool-nm">Authy</div><div class="tool-tp">2FA con backup</div><div class="tool-ds">Como Google Authenticator pero con respaldo en nube. Recupera 2FA fácilmente.</div><span class="cost free">Gratis</span></div>
+      </div>
+    </div>
+
+    <!-- ═══ GLOSARIO ═══ -->
+    <div class="page" id="p-glosario">
+      <div class="eyebrow">Referencia</div>
+      <h1 class="pg-title">Glosario</h1>
+      <p class="pg-sub">Términos clave de ciberseguridad. Usa el buscador para filtrar.</p>
+      <input type="text" class="glos-s" id="glos-s" placeholder="🔍  Buscar término..." oninput="filterGlos(this.value)">
+      <div id="glos-list">
+        <div class="glos-item"><div class="glos-term">Phishing</div><div class="glos-def">Ataque donde el atacante se hace pasar por una entidad legítima para robar credenciales, generalmente por correo electrónico. El 90% de ataques inicia aquí.</div></div>
+        <div class="glos-item"><div class="glos-term">Ransomware</div><div class="glos-def">Malware que cifra archivos y exige un pago para restaurar el acceso. El 44% de brechas en 2025 lo involucraron (Verizon DBIR 2025).</div></div>
+        <div class="glos-item"><div class="glos-term">2FA / MFA</div><div class="glos-def">Verificación en dos factores: contraseña + código en tu celular. Bloquea el 99.9% de ataques automáticos (Microsoft 2025).</div></div>
+        <div class="glos-item"><div class="glos-term">VPN</div><div class="glos-def">Red Privada Virtual. Cifra tu tráfico y oculta tu IP. Esencial en redes Wi-Fi públicas.</div></div>
+        <div class="glos-item"><div class="glos-term">Firewall</div><div class="glos-def">Sistema que monitorea y filtra el tráfico de red. Primera línea de defensa para redes domésticas y empresariales.</div></div>
+        <div class="glos-item"><div class="glos-term">Zero-Day</div><div class="glos-def">Vulnerabilidad desconocida por el fabricante, sin parche disponible. Los atacantes la explotan antes de ser descubierta.</div></div>
+        <div class="glos-item"><div class="glos-term">Botnet</div><div class="glos-def">Red de dispositivos infectados controlados remotamente para DDoS, spam o minería de criptomonedas.</div></div>
+        <div class="glos-item"><div class="glos-term">SQL Injection</div><div class="glos-def">Inserción de código SQL en formularios web para manipular bases de datos. En el Top 10 de OWASP desde 2003.</div></div>
+        <div class="glos-item"><div class="glos-term">Zero Trust</div><div class="glos-def">Modelo de seguridad: verificar siempre, nunca asumir. Reduce costos de brechas en $1.76M promedio (IBM 2025).</div></div>
+        <div class="glos-item"><div class="glos-term">Pentesting</div><div class="glos-def">Prueba de penetración autorizada para descubrir vulnerabilidades simulando ataques reales.</div></div>
+        <div class="glos-item"><div class="glos-term">AES-256</div><div class="glos-def">Estándar de cifrado simétrico prácticamente irrompible. Tardaría más que la edad del universo en romperse por fuerza bruta.</div></div>
+        <div class="glos-item"><div class="glos-term">TLS / SSL</div><div class="glos-def">Protocolos de cifrado para comunicaciones en internet. TLS 1.3 es el estándar actual detrás de HTTPS.</div></div>
+        <div class="glos-item"><div class="glos-term">DDoS</div><div class="glos-def">Ataque Distribuido de Denegación de Servicio: miles de dispositivos inundan un servidor hasta dejarlo caído. Creció 37% en 2024.</div></div>
+        <div class="glos-item"><div class="glos-term">Tailgating</div><div class="glos-def">Ingeniería social física: seguir a alguien autorizado para acceder a zonas restringidas sin credenciales.</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ MINIJUEGOS ═══ -->
+    <div class="page" id="p-minijuegos">
+      <div class="eyebrow">Aprende jugando</div>
+      <h1 class="pg-title">Minijuegos</h1>
+      <p class="pg-sub">Tres juegos educativos para reforzar tus conocimientos de ciberseguridad.</p>
+      <div class="games-grid">
+
+        <!-- MEMORIA -->
+        <div class="game-card">
+          <div class="game-ttl">🧩 Memoria: Conceptos</div>
+          <div class="game-desc">Encuentra las parejas de términos y definiciones de ciberseguridad.</div>
+          <div class="game-score" id="mem-score">Parejas: 0/6 · Intentos: 0</div>
+          <div class="mem-grid" id="mem-grid"></div>
+          <button class="game-btn" onclick="initMemory()">🔄 Nueva partida</button>
+        </div>
+
+        <!-- PHISHING DETECTOR -->
+        <div class="game-card">
+          <div class="game-ttl">🎣 Detector de Phishing</div>
+          <div class="game-desc">¿Es un correo legítimo o es phishing? Tienes que decidirlo.</div>
+          <div class="game-score" id="ph-score">Puntos: 0 · Ronda: 1/5</div>
+          <div id="ph-email-box"></div>
+          <div class="ph-btns">
+            <button class="ph-btn ph-real" onclick="phAnswer(true)">✅ Es legítimo</button>
+            <button class="ph-btn ph-fake" onclick="phAnswer(false)">🚨 Es Phishing</button>
+          </div>
+          <div class="ph-result" id="ph-result"></div>
+        </div>
+
+        <!-- PASSWORD BUILDER -->
+        <div class="game-card">
+          <div class="game-ttl">🔑 Constructor de Contraseña</div>
+          <div class="game-desc">Selecciona palabras, números y símbolos para construir una contraseña fuerte.</div>
+          <div class="pb-display" id="pb-display">Tu contraseña aparecerá aquí...</div>
+          <div class="pb-strength">Fortaleza: <span id="pb-str">—</span></div>
+          <p style="font-size:10px;color:var(--m2);margin-bottom:6px;">Palabras:</p>
+          <div class="pb-row" id="pb-words"></div>
+          <p style="font-size:10px;color:var(--m2);margin-bottom:6px;">Números y símbolos:</p>
+          <div class="pb-row" id="pb-extras"></div>
+          <button class="game-btn" onclick="resetPB()" style="margin-top:6px;">🔄 Limpiar</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══ COMENTARIOS ═══ -->
+    <div class="page" id="p-comentarios">
+      <div class="eyebrow">Comunidad</div>
+      <h1 class="pg-title">Comentarios</h1>
+      <p class="pg-sub">Déjanos tu opinión, sugerencias o preguntas sobre esta guía. Tu retroalimentación nos ayuda a mejorar.</p>
+      <div class="comment-form">
+        <h3>✍️ Dejar un comentario</h3>
+        <p>Tu nombre y comentario se guardan solo en este navegador.</p>
+        <div class="cf-row">
+          <input type="text" class="cf-input" id="cf-name" placeholder="Tu nombre">
+          <input type="text" class="cf-input" id="cf-topic" placeholder="Tema (opcional)">
+        </div>
+        <textarea class="cf-textarea" id="cf-text" placeholder="Escribe tu comentario o sugerencia aquí..."></textarea>
+        <div class="stars-row">
+          <label>Calificación:</label>
+          <span class="star" data-v="1" onclick="setStar(1)">★</span>
+          <span class="star" data-v="2" onclick="setStar(2)">★</span>
+          <span class="star" data-v="3" onclick="setStar(3)">★</span>
+          <span class="star" data-v="4" onclick="setStar(4)">★</span>
+          <span class="star" data-v="5" onclick="setStar(5)">★</span>
+        </div>
+        <button class="cf-submit" onclick="submitComment()">Enviar comentario →</button>
+      </div>
+      <h3 style="font-size:13px;font-weight:700;margin-bottom:.8rem;">💬 Comentarios <span id="comments-count" style="font-family:var(--mono);font-size:11px;color:var(--m)">(0)</span></h3>
+      <div id="comments-list"><div class="no-comments">Aún no hay comentarios. ¡Sé el primero! 👆</div></div>
+    </div>
+
+    <!-- ═══ COMPARTIR ═══ -->
+    <div class="page" id="p-compartir">
+      <div class="eyebrow">Difusión</div>
+      <h1 class="pg-title">Compartir</h1>
+      <p class="pg-sub">Genera un código QR o un enlace para difundir esta guía.</p>
+      <div class="share-grid">
+        <div class="share-c">
+          <h2>📱 Código QR</h2>
+          <p>Ingresa la URL y genera un QR para escanearlo con cualquier celular.</p>
+          <label class="s-lbl">URL de la página</label>
+          <input type="text" class="s-in" id="qr-url" placeholder="https://tu-usuario.github.io/shieldnet.html">
+          <button class="s-btn s-pri" onclick="genQR()">⚡ Generar QR</button>
+          <div id="qrbox"></div>
+          <p class="qr-hint" id="qrhint" style="display:none;">Clic derecho → "Guardar imagen" 📥</p>
+        </div>
+        <div class="share-c">
+          <h2>🔗 Generar enlace</h2>
+          <p>Crea un enlace para WhatsApp, Telegram o correo.</p>
+          <label class="s-lbl">URL de la página</label>
+          <input type="text" class="s-in" id="link-url" placeholder="https://tu-usuario.github.io/shieldnet.html">
+          <label class="s-lbl" style="margin-top:4px;">Mensaje personalizado</label>
+          <input type="text" class="s-in" id="link-msg" placeholder="Te comparto esta guía de ciberseguridad 🔐">
+          <button class="s-btn s-pri" onclick="genLink()">🔗 Crear enlace</button>
+          <div class="lp" id="link-prev"></div>
+          <button class="copy-btn" id="copy-btn" onclick="copyLink()">📋 Copiar enlace</button>
+          <div class="copied" id="copied">✅ ¡Copiado!</div>
+          <hr style="border:none;border-top:1px solid var(--brd);margin:.8rem 0;">
+          <div class="soc-row">
+            <a class="soc-btn" href="#" onclick="shareWA(event)"><span>💬</span><span>WhatsApp</span></a>
+            <a class="soc-btn" href="#" onclick="shareTG(event)"><span>✈️</span><span>Telegram</span></a>
+            <a class="soc-btn" href="#" onclick="shareMail(event)"><span>📧</span><span>Correo</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <h3>📱 Compartir ShieldNet</h3>
+    <p>Escanea para abrir en otro dispositivo.</p>
+    <div id="mqr"></div><br>
+    <button class="mc" onclick="closeModalBtn()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+/* ══ PARTICLES ══ */
+(function(){
+  const c=document.getElementById('particles');
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');
+    p.className='pt';
+    p.style.cssText=`left:${Math.random()*100}%;width:${1+Math.random()*2}px;height:${1+Math.random()*2}px;--d:${6+Math.random()*10}s;--dl:${Math.random()*8}s;--dx:${(Math.random()-.5)*60}px;`;
+    c.appendChild(p);
+  }
+})();
+
+function enterApp(){
+  document.getElementById('cover').classList.add('hide');
+  const app=document.getElementById('app');
+  app.classList.add('on');
+  setTimeout(()=>document.getElementById('cover').style.display='none',800);
+  animateMeters();
+}
+window.addEventListener('wheel',function once(){enterApp();window.removeEventListener('wheel',once);},{passive:true,once:true});
+
+/* ══ PROGRESS ══ */
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById('prog').style.width=(h>0?(window.scrollY/h)*100:0)+'%';
+},{passive:true});
+
+/* ══ NAV ══ */
+const labels={inicio:'Inicio',equipo:'Nuestro equipo',estadisticas:'Estadísticas',fundamentos:'Fundamentos',amenazas:'Amenazas',consejos:'Consejos',contrasenas:'Contraseñas',herramientas:'Herramientas',glosario:'Glosario',minijuegos:'Minijuegos',comentarios:'Comentarios',compartir:'Compartir / QR'};
+function go(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  document.getElementById('tc').textContent=labels[id]||id;
+  if(btn)btn.classList.add('active');
+  else document.querySelectorAll('.nb').forEach(b=>{if(b.textContent.trim().startsWith(labels[id]?.split(' ')[0]))b.classList.add('active');});
+  if(window.innerWidth<900)document.getElementById('sb').classList.remove('open');
+  window.scrollTo(0,0);
+  if(id==='estadisticas'||id==='amenazas')setTimeout(animateMeters,300);
+}
+function toggleSb(){document.getElementById('sb').classList.toggle('open');}
+function toggleAcc(h){h.parentElement.classList.toggle('open');}
+function switchT(id,btn){
+  document.querySelectorAll('.ttab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tpanel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tp-'+id).classList.add('active');
+}
+
+/* ══ METER ══ */
+function animateMeters(){document.querySelectorAll('.mfill').forEach(b=>setTimeout(()=>b.style.width=b.dataset.w+'%',100));}
+
+/* ══ PASSWORD ══ */
+function checkPwd(v){
+  const bar=document.getElementById('pwdb'),lbl=document.getElementById('pwdl'),fb=document.getElementById('pwdfb');
+  const ck={l:v.length>=16,u:/[A-Z]/.test(v),lo:/[a-z]/.test(v),n:/[0-9]/.test(v),s:/[^A-Za-z0-9]/.test(v),lg:v.length>=20};
+  [['ci-l',ck.l],['ci-u',ck.u],['ci-lo',ck.lo],['ci-n',ck.n],['ci-s',ck.s],['ci-lg',ck.lg]].forEach(([id,v])=>{document.getElementById(id).className='ci'+(v?' met':'');});
+  if(!v){bar.style.width='0';lbl.textContent='—';fb.textContent='';return;}
+  const s=Object.values(ck).filter(Boolean).length;
+  const lv=[{w:'12%',c:'#f43f5e',l:'Muy débil',f:'Demasiado corta o simple.'},{w:'25%',c:'#f43f5e',l:'Débil',f:'Agrega más caracteres.'},{w:'40%',c:'#f59e0b',l:'Regular',f:'Agrega longitud y símbolos.'},{w:'55%',c:'#f59e0b',l:'Aceptable',f:'Casi bien, apunta a 16+.'},{w:'70%',c:'#3b82f6',l:'Buena',f:'No la reutilices.'},{w:'87%',c:'#00ffa3',l:'Muy buena 🔐',f:'Excelente.'},{w:'100%',c:'#00ffa3',l:'Excelente 🔐',f:'Contraseña muy robusta.'}];
+  const i=Math.min(s,lv.length-1);
+  bar.style.width=lv[i].w;bar.style.background=lv[i].c;
+  lbl.textContent=lv[i].l;lbl.style.color=lv[i].c;
+  fb.textContent=lv[i].f;fb.style.color=lv[i].c;
+}
+
+/* ══ GLOSARIO ══ */
+function filterGlos(q){document.querySelectorAll('#glos-list .glos-item').forEach(item=>item.style.display=item.textContent.toLowerCase().includes(q.toLowerCase())?'flex':'none');}
+
+/* ══ QUIZ ══ */
+const QD=[
+  {q:'¿Cuál medida bloquea el 99.9% de ataques automáticos?',opts:['Contraseña larga','Activar 2FA','Cambiar contraseña mensual','No compartir correo'],ans:1,exp:'2FA bloquea el 99.9% de ataques automatizados aunque la contraseña sea robada (Microsoft 2025).'},
+  {q:'¿Qué porcentaje de ataques inicia con phishing?',opts:['50%','70%','90%','30%'],ans:2,exp:'El 90% de los ciberataques exitosos comienzan con phishing (Fortinet/IBM 2025).'},
+  {q:'¿Cuántos caracteres mínimo necesita una contraseña segura?',opts:['6','8','12','16'],ans:3,exp:'Los expertos recomiendan mínimo 16 caracteres. La longitud es más importante que la complejidad.'},
+  {q:'¿Qué hace el ransomware?',opts:['Apaga el equipo','Cifra archivos y pide rescate','Borra el SO','Roba solo fotos'],ans:1,exp:'El ransomware cifra todos tus archivos y exige un pago. El 44% de brechas en 2025 lo involucraron (Verizon DBIR 2025).'},
+  {q:'En Wi-Fi público, ¿qué debes usar antes de acceder a tu banco?',opts:['Nada','VPN','Modo avión','Cerrar apps'],ans:1,exp:'Una VPN cifra tu tráfico protegiéndote de ataques MitM que son el 35% de incidentes en redes públicas.'},
+];
+let qI=0,qS=0,qAns=false;
+function renderQuiz(){
+  const c=document.getElementById('quiz-cnt');
+  if(qI>=QD.length){
+    const pct=Math.round((qS/QD.length)*100);
+    const msg=pct===100?'¡Perfecto! 🏆':pct>=60?'¡Muy bien! 💪':'Sigue aprendiendo. 📚';
+    c.innerHTML=`<div class="quiz-score"><div class="qs-n">${qS}/${QD.length}</div><div class="qs-t">${pct}% correcto · ${msg}</div><button class="qbtn qbtn-next" style="margin-top:1rem" onclick="resetQuiz()">🔄 Repetir</button></div>`;
+    document.getElementById('qbar').style.width='100%';return;
+  }
+  const q=QD[qI];qAns=false;
+  document.getElementById('qbar').style.width=((qI/QD.length)*100)+'%';
+  c.innerHTML=`<div class="quiz-q">P${qI+1}/${QD.length}: ${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<div class="qopt" onclick="selOpt(this,${i})" data-i="${i}"><span class="ql">${'ABCD'[i]}</span>${o}</div>`).join('')}</div><div class="qfb" id="qf"></div><div class="quiz-nav"><span class="quiz-prog">Puntos: ${qS}/${qI}</span><button class="qbtn qbtn-next" id="qnxt" onclick="nextQ()" disabled>Siguiente →</button></div>`;
+}
+function selOpt(el,i){
+  if(qAns)return;qAns=true;
+  const q=QD[qI];const opts=document.querySelectorAll('.qopt');
+  opts.forEach(o=>o.classList.add('dis'));
+  const fb=document.getElementById('qf');
+  if(i===q.ans){el.classList.add('ok');fb.className='qfb show ok';fb.textContent='✅ ¡Correcto! '+q.exp;qS++;}
+  else{el.classList.add('no');opts[q.ans].classList.add('ok');opts[q.ans].classList.remove('dis');fb.className='qfb show no';fb.textContent='❌ Incorrecto. '+q.exp;}
+  document.getElementById('qnxt').disabled=false;
+}
+function nextQ(){qI++;renderQuiz();}
+function resetQuiz(){qI=0;qS=0;renderQuiz();}
+renderQuiz();
+
+/* ══ MINIJUEGOS ══ */
+
+/* MEMORY GAME */
+const memPairs=[['Phishing','Ataca por email'],['Ransomware','Cifra archivos'],['2FA','Doble factor'],['Firewall','Filtra tráfico'],['VPN','Cifra conexión'],['Botnet','Red infectada']];
+let memCards=[],memFlipped=[],memMatched=0,memTries=0;
+function initMemory(){
+  memFlipped=[];memMatched=0;memTries=0;
+  const all=[...memPairs.map(([t])=>({t,k:t})),...memPairs.map(([,d],i)=>({t:d,k:memPairs[i][0]}))];
+  memCards=all.sort(()=>Math.random()-.5);
+  const g=document.getElementById('mem-grid');
+  g.innerHTML=memCards.map((c,i)=>`<div class="mem-card" data-i="${i}" onclick="flipCard(${i})">${c.t}</div>`).join('');
+  document.getElementById('mem-score').textContent=`Parejas: 0/6 · Intentos: 0`;
+}
+function flipCard(i){
+  const cards=document.querySelectorAll('.mem-card');
+  const card=cards[i];
+  if(card.classList.contains('flip')||card.classList.contains('matched')||memFlipped.length>=2)return;
+  card.classList.add('flip');
+  memFlipped.push(i);
+  if(memFlipped.length===2){
+    memTries++;
+    const [a,b]=memFlipped;
+    if(memCards[a].k===memCards[b].k&&a!==b){
+      setTimeout(()=>{cards[a].classList.replace('flip','matched');cards[b].classList.replace('flip','matched');memMatched++;memFlipped=[];document.getElementById('mem-score').textContent=`Parejas: ${memMatched}/6 · Intentos: ${memTries}`;if(memMatched===6)setTimeout(()=>alert('🎉 ¡Completado! '+memTries+' intentos'),200);},400);
+    }else{
+      setTimeout(()=>{card.classList.remove('flip');cards[memFlipped[0]].classList.remove('flip');card.classList.add('nope');cards[memFlipped[0]].classList.add('nope');setTimeout(()=>{card.classList.remove('nope');cards[a]&&cards[a].classList.remove('nope');},400);memFlipped=[];document.getElementById('mem-score').textContent=`Parejas: ${memMatched}/6 · Intentos: ${memTries}`;},700);
+    }
+  }
+}
+
+/* PHISHING DETECTOR */
+const phEmails=[
+  {from:'noreply@bancomer.com.mx',subject:'Tu cuenta está activa',body:'Tu saldo disponible es de $2,450.00. Accede en linea.bancomer.com.mx',isPhish:false,exp:'✅ Dominio oficial de Bancomer. Mensaje legítimo.'},
+  {from:'seguridad@bancomer-alertas.net',subject:'⚠️ URGENTE: Cuenta bloqueada',body:'Tu cuenta fue BLOQUEADA. Verifica AHORA: <span class="ph-link">bit.ly/unblock-ahora</span> o perderás acceso en 24h.',isPhish:true,exp:'🚨 Dominio falso "bancomer-alertas.net". URL acortada sospechosa. Urgencia artificial = phishing.'},
+  {from:'no-reply@google.com',subject:'Nueva sesión iniciada en tu cuenta',body:'Detectamos un nuevo inicio de sesión desde Ciudad de México. Si fuiste tú, no hay nada que hacer.',isPhish:false,exp:'✅ Dominio oficial google.com. No pide datos ni tiene enlaces sospechosos.'},
+  {from:'soporte@paypal-verificacion.com',subject:'Actualiza tu información de pago',body:'Tu cuenta PayPal requiere verificación inmediata. Haz clic: <span class="ph-link">paypal-update.com/verify</span>',isPhish:true,exp:'🚨 PayPal oficial es paypal.com. "paypal-verificacion.com" y "paypal-update.com" son dominios falsos.'},
+  {from:'becas@sep.gob.mx',subject:'Tu beca Benito Juárez fue aprobada',body:'Tu solicitud de beca fue aprobada. El depósito se realizará en los próximos 5 días hábiles.',isPhish:false,exp:'✅ Dominio .gob.mx es oficial del gobierno mexicano. No pide datos bancarios.'},
+];
+let phI=0,phS=0,phAnswered=false;
+function initPhishing(){phI=0;phS=0;phAnswered=false;renderPh();}
+function renderPh(){
+  if(phI>=phEmails.length){document.getElementById('ph-email-box').innerHTML=`<div style="text-align:center;padding:1.5rem;font-size:13px">🎉 ¡Terminaste! Puntuación: ${phS}/${phEmails.length}</div>`;document.getElementById('ph-result').style.display='none';document.querySelector('.ph-btns').style.display='none';return;}
+  const e=phEmails[phI];phAnswered=false;
+  document.getElementById('ph-email-box').innerHTML=`<div class="ph-email"><div class="ph-from">De: ${e.from}</div><div class="ph-subject">${e.subject}</div><div class="ph-body">${e.body}</div></div>`;
+  document.getElementById('ph-result').className='ph-result';
+  document.getElementById('ph-score').textContent=`Puntos: ${phS} · Ronda: ${phI+1}/5`;
+  document.querySelector('.ph-btns').style.display='flex';
+}
+function phAnswer(isLeg){
+  if(phAnswered)return;phAnswered=true;
+  const e=phEmails[phI];const correct=(isLeg&&!e.isPhish)||(!isLeg&&e.isPhish);
+  if(correct)phS++;
+  const r=document.getElementById('ph-result');
+  r.className='ph-result show '+(correct?'ok':'bad');
+  r.textContent=e.exp;
+  setTimeout(()=>{phI++;renderPh();},1800);
+}
+
+/* PASSWORD BUILDER */
+const pbWords=['Gato','Nube','Fuego','Lago','Luna','Sol','Tigre','Roca','Mesa','Viento'];
+const pbExtras=['123','#','!','@','2026','99','$','&','7','*'];
+let pbSel=[];
+function initPB(){
+  const wc=document.getElementById('pb-words');
+  wc.innerHTML=pbWords.map(w=>`<div class="pb-word" onclick="pbAdd('${w}')">${w}</div>`).join('');
+  const ec=document.getElementById('pb-extras');
+  ec.innerHTML=pbExtras.map(e=>`<div class="pb-word" onclick="pbAdd('${e}')">${e}</div>`).join('');
+}
+function pbAdd(v){
+  pbSel.push(v);
+  const pwd=pbSel.join('-');
+  document.getElementById('pb-display').textContent=pwd;
+  const s=pbSel.length;
+  const hasUp=/[A-Z]/.test(pwd),hasNum=/[0-9]/.test(pwd),hasSym=/[^A-Za-z0-9\-]/.test(pwd);
+  let str='Muy débil';
+  if(s>=3&&hasNum)str='Regular';
+  if(s>=4&&hasNum&&hasSym)str='Buena';
+  if(s>=5&&hasNum&&hasSym)str='Muy buena 🔐';
+  if(s>=6&&hasNum&&hasSym)str='Excelente 🔐🔐';
+  document.getElementById('pb-str').textContent=str;
+}
+function resetPB(){pbSel=[];document.getElementById('pb-display').textContent='Tu contraseña aparecerá aquí...';document.getElementById('pb-str').textContent='—';}
+
+initMemory();initPhishing();initPB();
+
+/* ══ COMENTARIOS ══ */
+let comments=[],stars=0;
+function setStar(v){
+  stars=v;
+  document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('active',i<v));
+}
+function submitComment(){
+  const name=document.getElementById('cf-name').value.trim();
+  const text=document.getElementById('cf-text').value.trim();
+  if(!name||!text){alert('Por favor completa tu nombre y comentario.');return;}
+  const comment={name,topic:document.getElementById('cf-topic').value.trim(),text,stars,time:new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'})};
+  comments.unshift(comment);
+  renderComments();
+  document.getElementById('cf-name').value='';
+  document.getElementById('cf-topic').value='';
+  document.getElementById('cf-text').value='';
+  stars=0;document.querySelectorAll('.star').forEach(s=>s.classList.remove('active'));
+}
+function renderComments(){
+  const list=document.getElementById('comments-list');
+  document.getElementById('comments-count').textContent=`(${comments.length})`;
+  if(!comments.length){list.innerHTML='<div class="no-comments">Aún no hay comentarios. ¡Sé el primero! 👆</div>';return;}
+  list.innerHTML=comments.map(c=>`<div class="comment"><div class="comment-h"><div><div class="comment-name">${c.name}${c.topic?` · <span style="color:var(--m2);font-weight:400;font-size:11px">${c.topic}</span>`:''}</div><div class="comment-time">${c.time}</div></div><div class="comment-stars">${'★'.repeat(c.stars||0)}<span style="color:var(--m)">${'★'.repeat(5-(c.stars||0))}</span></div></div><div class="comment-text">${c.text}</div></div>`).join('');
+}
+
+/* ══ QR ══ */
+let mqrDone=false;
+function genQR(){const url=document.getElementById('qr-url').value.trim();if(!url){alert('Ingresa una URL');return;}const b=document.getElementById('qrbox');b.innerHTML='<div></div>';new QRCode(b.firstChild,{text:url,width:180,height:180,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});document.getElementById('qrhint').style.display='block';}
+function openModal(){document.getElementById('modal').classList.add('open');if(!mqrDone){const c=document.getElementById('mqr');c.innerHTML='';new QRCode(c,{text:window.location.href,width:160,height:160,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});mqrDone=true;}}
+function closeModal(e){if(e.target===document.getElementById('modal'))closeModalBtn();}
+function closeModalBtn(){document.getElementById('modal').classList.remove('open');}
+let curLink='';
+function genLink(){const url=document.getElementById('link-url').value.trim();if(!url){alert('Ingresa una URL');return;}curLink=url;document.getElementById('link-prev').style.display='block';document.getElementById('link-prev').textContent=url;document.getElementById('copy-btn').style.display='block';}
+function copyLink(){if(!curLink)return;navigator.clipboard.writeText(curLink).then(()=>{const m=document.getElementById('copied');m.style.display='block';setTimeout(()=>m.style.display='none',2000);});}
+function shareWA(e){e.preventDefault();const url=document.getElementById('link-url').value.trim()||window.location.href;const msg=document.getElementById('link-msg').value.trim()||'Guía de Ciberseguridad del CBTIs 189 🔐';window.open('https://wa.me/?text='+encodeURIComponent(msg+' '+url),'_blank');}
+function shareTG(e){e.preventDefault();const url=document.getElementById('link-url').value.trim()||window.location.href;const msg=document.getElementById('link-msg').value.trim()||'Guía de Ciberseguridad 🔐';window.open('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(msg),'_blank');}
+function shareMail(e){e.preventDefault();const url=document.getElementById('link-url').value.trim()||window.location.href;const msg=document.getElementById('link-msg').value.trim()||'Te comparto esta guía de ciberseguridad';window.location.href='mailto:?subject='+encodeURIComponent('ShieldNet — CBTIs 189 Ciberseguridad')+'&body='+encodeURIComponent(msg+'\n\n'+url);}
+document.addEventListener('DOMContentLoaded',()=>{const h=window.location.href;document.getElementById('qr-url').value=h;document.getElementById('link-url').value=h;});
+</script>
+</body>
+</html>
