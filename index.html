@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>ShieldNet v4 — CBTIs 189</title>
+<title>ShieldNet v5 — CBTIs 189</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lexend:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -125,10 +125,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
 .tp{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);color:var(--p);}
 
 /* ═══ INICIO ═══ */
-.ticker{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:5px 10px;margin-bottom:.7rem;display:flex;align-items:center;gap:5px;overflow:hidden;}
-.t-lbl{font-family:var(--mono);font-size:8px;color:var(--a);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);padding:2px 7px;border-radius:3px;flex-shrink:0;}
-.t-txt{font-size:10px;color:var(--m2);white-space:nowrap;animation:tk 30s linear infinite;}
-@keyframes tk{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+
+
+100%{transform:translateX(-50%)}}
 .hero{position:relative;border:1px solid var(--brd);border-radius:8px;padding:.7rem;margin-bottom:.7rem;overflow:hidden;background:linear-gradient(135deg,rgba(0,255,163,.03),rgba(59,130,246,.03));}
 .hero::before{content:'';position:absolute;top:-50px;right:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,163,.07),transparent 70%);pointer-events:none;}
 .hero-ey{display:inline-flex;align-items:center;gap:4px;margin-bottom:.7rem;background:rgba(0,255,163,.07);border:1px solid rgba(0,255,163,.2);color:var(--g);border-radius:100px;padding:4px 12px;font-size:10px;font-family:var(--mono);}
@@ -157,7 +157,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
 .qc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:.9rem;}
 .qc{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:.8rem;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:4px;}
 .qc:hover{border-color:rgba(0,255,163,.25);transform:translateY(-2px);background:var(--bg3);}
-.qci{font-size:16px;}
+.qci{font-size:14px;}
 .qct{font-size:10px;font-weight:700;}
 .qcd{font-size:10px;color:var(--m2);line-height:1.5;}
 .qca{font-size:10px;color:var(--g);font-family:var(--mono);}
@@ -484,6 +484,49 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
   .pwd-cmp{grid-template-columns:1fr;}
   .share-grid{grid-template-columns:1fr;}
 }
+
+/* ═══ RESEÑAS ═══ */
+.rev-form{background:var(--bg2);border:1px solid var(--brd);border-radius:9px;padding:.9rem;margin-bottom:.8rem;}
+.rev-form h3{font-size:12px;font-weight:700;margin-bottom:.6rem;}
+.rev-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem;}
+.rev-lbl{display:block;font-size:9px;font-family:var(--mono);color:var(--m);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+.rev-input{width:100%;padding:7px 10px;background:var(--bg3);border:1px solid var(--brd);border-radius:7px;color:var(--text);font-family:var(--font);font-size:11px;outline:none;transition:border-color .2s;margin-bottom:.5rem;}
+.rev-input:focus{border-color:rgba(0,255,163,.35);}
+.rev-select{appearance:none;cursor:pointer;}
+.rev-select option{background:var(--bg3);}
+.stars-wrap{display:flex;align-items:center;gap:3px;margin-bottom:.6rem;}
+.star{font-size:1.4rem;cursor:pointer;color:var(--m);transition:all .15s;line-height:1;}
+
+.star.on{color:var(--a);transform:scale(1.15);}
+.star-label{font-size:9px;font-family:var(--mono);color:var(--m);margin-left:5px;}
+.rev-textarea{width:100%;padding:8px 10px;background:var(--bg3);border:1px solid var(--brd);border-radius:7px;color:var(--text);font-family:var(--font);font-size:11px;outline:none;transition:border-color .2s;resize:vertical;min-height:75px;margin-bottom:.6rem;}
+.rev-textarea:focus{border-color:rgba(0,255,163,.35);}
+.rev-submit{padding:8px 20px;border-radius:7px;border:none;cursor:pointer;font-family:var(--font);font-size:11px;font-weight:700;background:var(--g);color:#04060e;transition:opacity .2s;}
+.rev-submit:hover{opacity:.85;}
+.rev-err{font-size:10px;color:var(--r);margin-top:5px;min-height:14px;font-family:var(--mono);}
+/* summary */
+.rev-summary{background:var(--bg2);border:1px solid var(--brd);border-radius:9px;padding:.85rem;margin-bottom:.8rem;display:flex;gap:1rem;align-items:center;}
+.rev-avg{text-align:center;min-width:70px;}
+.rev-avg-n{font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--a);line-height:1;}
+.rev-avg-stars{font-size:.9rem;color:var(--a);margin:2px 0;}
+.rev-avg-lbl{font-size:9px;color:var(--m);font-family:var(--mono);}
+.rev-bars{flex:1;display:flex;flex-direction:column;gap:4px;}
+.rbar-row{display:flex;align-items:center;gap:6px;font-size:9px;font-family:var(--mono);color:var(--m2);}
+.rbar-wrap{flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;}
+.rbar-fill{height:100%;background:var(--a);border-radius:3px;transition:width .5s;}
+/* list */
+.rev-list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;}
+.rev-sort{padding:5px 9px;background:var(--bg2);border:1px solid var(--brd);border-radius:6px;color:var(--m2);font-family:var(--mono);font-size:9px;outline:none;cursor:pointer;}
+.rev-sort option{background:var(--bg2);}
+.rev-card{background:var(--bg2);border:1px solid var(--brd);border-radius:8px;padding:.85rem;margin-bottom:6px;animation:pi .25s ease;}
+.rev-card-h{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:5px;gap:.5rem;}
+.rev-name{font-size:11px;font-weight:700;}
+.rev-meta{font-size:9px;color:var(--m);font-family:var(--mono);}
+.rev-card-stars{font-size:.85rem;color:var(--a);flex-shrink:0;}
+.rev-section-tag{display:inline-block;font-size:9px;font-family:var(--mono);background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.15);color:var(--p);padding:1px 7px;border-radius:4px;margin-bottom:5px;}
+.rev-text{font-size:11px;color:var(--m2);line-height:1.6;}
+.rev-empty{text-align:center;padding:2rem;color:var(--m2);font-size:11px;}
+@media(max-width:600px){.rev-row{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -496,7 +539,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
   <div class="cv-cnt">
     <div class="cv-badge"><span>CBTIs 189 · 4° Semestre · Matutino A · IT Ciberseguridad</span></div>
     <div class="cv-title">SHIELD<br><span class="glt">NET</span></div>
-    <div class="cv-sub">Centro de Ciberseguridad · Versión 4.0 · 2026</div>
+    <div class="cv-sub">Centro de Ciberseguridad · Versión 5.0 · 2026</div>
     <button class="cv-enter" onclick="enterApp()"><span>⚡</span><span>Ingresar al sitio</span></button>
   </div>
 </div>
@@ -517,12 +560,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
         </div>
         <div class="logo-nm">ShieldNet</div>
       </div>
-      <div class="logo-vr">v4.0 · CBTIs 189 · 2026</div>
+      <div class="logo-vr">v5.0 · CBTIs 189 · 2026</div>
     </div>
     <div class="nav-sec">
       <div class="nav-lbl">Principal</div>
-      <button class="nb active" onclick="go('inicio',this)"><span class="ni">🏠</span>Inicio</button>
-      <button class="nb" onclick="go('equipo',this)"><span class="ni">👥</span>Nuestro equipo<span class="chip chp">Gen.1</span></button>
+      <button class="nb active" onclick="go('inicio',this)"><span class="ni">🏠</span>Inicio · Equipo</button>
       <button class="nb" onclick="go('estadisticas',this)"><span class="ni">📊</span>Estadísticas<span class="chip chg">2026</span></button>
     </div>
     <div class="nav-sec">
@@ -537,7 +579,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
     <div class="nav-sec">
       <div class="nav-lbl">Interactivo</div>
       <button class="nb" onclick="go('minijuegos',this)"><span class="ni">🎮</span>Minijuegos</button>
-      <button class="nb" onclick="go('comentarios',this)"><span class="ni">💬</span>Comentarios</button>
+            <button class="nb" onclick="go('resenas',this)"><span class="ni">⭐</span>Reseñas</button>
       <button class="nb" onclick="go('compartir',this)"><span class="ni">📱</span>Compartir / QR</button>
     </div>
     <div class="sb-ft">
@@ -555,66 +597,27 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
       </div>
     </div>
 
-    <!-- ═══ INICIO ═══ -->
+            <!-- ═══ INICIO ═══ -->
     <div class="page active" id="p-inicio">
-      <div class="ticker">
-        <span class="t-lbl">2026</span>
-        <div class="t-txt">⚡ 1,968 ataques/semana — +18% vs 2024 · 💸 $4.44M costo promedio de brecha (IBM 2025) · 🎣 90% ataques = phishing · 🔐 2FA bloquea 99.9% · 👤 68% brechas = error humano (Verizon 2025) · 🏥 Salud: $11.2M por brecha · 🇺🇸 EE.UU.: $10.22M récord · &nbsp;&nbsp;⚡ 1,968 ataques/semana — +18% vs 2024 · 💸 $4.44M costo promedio de brecha (IBM 2025) · 🎣 90% ataques = phishing · 🔐 2FA bloquea 99.9% · 👤 68% brechas = error humano (Verizon 2025) ·</div>
-      </div>
-      <div class="hero">
-        <div class="hero-ey">Centro de Ciberseguridad · 2026</div>
-        <h1>Protege tu vida<br>digital ante las<br><em>ciberamenazas</em></h1>
-        <div class="hero-grid">
-          <div class="ht">
-            <p>Vivimos en una era donde <strong>casi toda nuestra vida ocurre en línea.</strong> La ciberseguridad no es solo para expertos: cualquier persona puede adoptar hábitos que la protejan hoy mismo.</p>
-            <p>En 2025 se registraron <span class="hl">3,322 brechas de datos</span> solo en EE.UU. El cibercrimen costará <span class="hl">$10.5 billones USD en 2026</span>. Sin embargo, <strong>la higiene básica previene el 98% de los ataques</strong> (Microsoft).</p>
-          </div>
-          <div class="pillars">
-            <div class="pillar"><div class="pi pig">🔐</div><div><h4>Confidencialidad</h4><p>Solo personas autorizadas acceden a tu info.</p></div></div>
-            <div class="pillar"><div class="pi pib">✅</div><div><h4>Integridad</h4><p>Datos sin alteraciones no autorizadas.</p></div></div>
-            <div class="pillar"><div class="pi pir">⚡</div><div><h4>Disponibilidad</h4><p>Sistemas accesibles cuando los necesitas.</p></div></div>
-            <div class="pillar"><div class="pi pip">👤</div><div><h4>Autenticidad</h4><p>Verificas quién es quién en el mundo digital.</p></div></div>
-          </div>
-        </div>
-      </div>
-      <div class="stat-strip">
-        <div class="stat"><div class="sn" id="c1">$4.44M</div><div class="sl">Costo promedio brecha 2025</div><div class="ss">IBM 2025</div></div>
-        <div class="stat"><div class="sn" id="c2">68%</div><div class="sl">Brechas por error humano</div><div class="ss">Verizon DBIR 2025</div></div>
-        <div class="stat"><div class="sn">241d</div><div class="sl">Ciclo de vida de una brecha</div><div class="ss">IBM Security 2025</div></div>
-        <div class="stat"><div class="sn" id="c3">99.9%</div><div class="sl">Ataques bloqueados con 2FA</div><div class="ss">Microsoft 2025</div></div>
-      </div>
-      <div class="qc-grid">
-        <div class="qc" onclick="go('equipo',null)"><div class="qci">👥</div><div class="qct">Nuestro equipo</div><div class="qcd">Primera gen. CBTIs 189 · IT Ciberseguridad.</div><div class="qca">→ Conocernos</div></div>
-        <div class="qc" onclick="go('amenazas',null)"><div class="qci">⚠️</div><div class="qct">Amenazas</div><div class="qcd">Phishing, ransomware, botnets y más.</div><div class="qca">→ Conocer</div></div>
-        <div class="qc" onclick="go('consejos',null)"><div class="qci">🛡️</div><div class="qct">Consejos</div><div class="qcd">7 pasos concretos sin ser experto.</div><div class="qca">→ Aprender</div></div>
-        <div class="qc" onclick="go('minijuegos',null)"><div class="qci">🎮</div><div class="qct">Minijuegos</div><div class="qcd">Aprende jugando: memoria, detector de phishing y más.</div><div class="qca">→ Jugar</div></div>
-      </div>
-      <!-- QUIZ -->
-      <div class="quiz-wrap">
-        <div class="quiz-head"><h3>🧠 Quiz Rápido</h3><p>5 preguntas para poner a prueba tus conocimientos.</p></div>
-        <div class="qbar-w"><div class="qbar" id="qbar"></div></div>
-        <div id="quiz-cnt"></div>
-      </div>
-    </div>
 
-    <!-- ═══ EQUIPO ═══ -->
-    <div class="page" id="p-equipo">
       <div class="team-hero">
         <div class="cbtis-logo"><div class="cbtis-sigla">CBTIs</div><div class="cbtis-sep"></div><div class="cbtis-num">189</div><div class="cbtis-it">IT · Ciberseg.</div></div>
         <div class="school-badge">🏫 CBTIs 189 · 4° Semestre · Matutino A · 2026</div>
         <h1>Primera <span>Generación</span><br>de Ciberseguridad</h1>
-        <p>Somos el primer grupo en cursar la especialidad de IT Ciberseguridad en el CBTIs 189. Este sitio es nuestro proyecto de evaluación de período, combinando investigación real y desarrollo web.</p>
-        <div style="display:inline-flex;align-items:center;gap:6px;font-size:9px;font-family:var(--mono);background:rgba(0,255,163,.07);border:1px solid rgba(0,255,163,.15);color:var(--g);border-radius:6px;padding:3px 9px;">⚡ Proyecto de evaluación · IT Ciberseguridad · 2026</div>
+        <p>Primer grupo en cursar IT Ciberseguridad en el CBTIs 189. Este sitio es nuestro proyecto de evaluación, combinando investigación real y desarrollo web.</p>
+        <div style="display:inline-flex;align-items:center;gap:5px;font-size:9px;font-family:var(--mono);background:rgba(0,255,163,.07);border:1px solid rgba(0,255,163,.15);color:var(--g);border-radius:5px;padding:4px 11px;">⚡ Proyecto de evaluación · IT Ciberseguridad · 2026</div>
       </div>
+
       <div class="prof-card">
         <div class="prof-av">GO</div>
         <div class="prof-info">
           <h3>Prof. Gerardo Ortega</h3>
           <div class="prof-role">Profesor titular · IT Ciberseguridad</div>
-          <p>Bajo su guía, la primera generación de IT Ciberseguridad del CBTIs 189 desarrolló este proyecto de investigación y desarrollo web como parte de su evaluación de período en el 4° semestre, grupo matutino A.</p>
+          <p>Bajo su guía, la primera generación desarrolló este proyecto como parte de su evaluación de período en el 4° semestre, grupo matutino A, 2026.</p>
         </div>
       </div>
-      <h2 style="font-family:var(--display);font-size:1.1rem;letter-spacing:2px;margin-bottom:.5rem;">El Equipo</h2>
+
+      <h2 style="font-family:var(--display);font-size:1.1rem;letter-spacing:2px;margin-bottom:.6rem;">El Equipo</h2>
       <div class="members-grid">
         <div class="member leader">
           <div class="member-av av-leader">SV</div>
@@ -626,7 +629,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
           <div class="member-av av-ui">JE</div>
           <div class="member-name">Joshua Elías</div>
           <div class="member-role mr-ui">Interfaz / UI</div>
-          <div style="display:inline-flex;align-items:center;gap:2px;font-size:9px;font-family:var(--mono);background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:var(--b);padding:2px 7px;border-radius:4px;margin-top:4px;">🖥️ UI Lead</div>
+          <div style="display:inline-flex;align-items:center;gap:3px;font-size:9px;font-family:var(--mono);background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:var(--b);padding:2px 7px;border-radius:4px;margin-top:3px;">🖥️ UI Lead</div>
         </div>
         <div class="member"><div class="member-av av-default">TG</div><div class="member-name">Tomas Garza</div><div class="member-role mr-default">Investigación</div></div>
         <div class="member"><div class="member-av av-default">RR</div><div class="member-name">Rodrigo Roel</div><div class="member-role mr-default">Investigación</div></div>
@@ -635,18 +638,24 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
         <div class="member"><div class="member-av av-default">AB</div><div class="member-name">Azua Barrón</div><div class="member-role mr-default">Investigación</div></div>
         <div class="member"><div class="member-av av-default">FP</div><div class="member-name">Francisco Pérez</div><div class="member-role mr-default">Investigación</div></div>
       </div>
-      <div class="card">
-        <h3 style="font-size:10.5px;font-weight:700;margin-bottom:.5rem;">📅 Sobre este proyecto</h3>
-        <div style="display:flex;flex-direction:column;gap:.4rem;font-size:11.5px;color:var(--m2);">
-          <div style="display:flex;gap:.35rem;align-items:flex-start;"><span style="color:var(--p);font-family:var(--mono);font-size:9px;min-width:80px;padding-top:2px;">INVESTIGACIÓN</span><span>Recopilación de estadísticas verificadas de fuentes oficiales: IBM, Verizon DBIR, Check Point, CrowdStrike y más.</span></div>
-          <div style="display:flex;gap:.35rem;align-items:flex-start;"><span style="color:var(--b);font-family:var(--mono);font-size:9px;min-width:80px;padding-top:2px;">DISEÑO UI</span><span>Construcción del sitio web enfocado en usuarios sin conocimientos técnicos previos, a cargo de Joshua Elías.</span></div>
-          <div style="display:flex;gap:.35rem;align-items:flex-start;"><span style="color:var(--g);font-family:var(--mono);font-size:9px;min-width:80px;padding-top:2px;">LIDERAZGO</span><span>Coordinación del proyecto y equipo bajo la dirección de Santiago Veas como líder.</span></div>
-          <div style="display:flex;gap:.35rem;align-items:flex-start;"><span style="color:var(--a);font-family:var(--mono);font-size:9px;min-width:80px;padding-top:2px;">EVALUACIÓN</span><span>Presentación como proyecto final de período bajo la supervisión del Prof. Gerardo Ortega. 4° Semestre · Matutino A · 2026.</span></div>
-        </div>
+
+      <div class="stat-strip">
+        <div class="stat"><div class="sn">$4.44M</div><div class="sl">Costo promedio brecha 2025</div><div class="ss">IBM 2025</div></div>
+        <div class="stat"><div class="sn">68%</div><div class="sl">Brechas por error humano</div><div class="ss">Verizon DBIR 2025</div></div>
+        <div class="stat"><div class="sn">241d</div><div class="sl">Ciclo de vida de una brecha</div><div class="ss">IBM Security 2025</div></div>
+        <div class="stat"><div class="sn">99.9%</div><div class="sl">Ataques bloqueados con 2FA</div><div class="ss">Microsoft 2025</div></div>
       </div>
+
+      <div class="qc-grid">
+        <div class="qc" onclick="go('estadisticas',null)"><div class="qci">📊</div><div class="qct">Estadísticas</div><div class="qcd">Datos verificados 2025–2026.</div><div class="qca">→ Ver datos</div></div>
+        <div class="qc" onclick="go('amenazas',null)"><div class="qci">⚠️</div><div class="qct">Amenazas</div><div class="qcd">Phishing, ransomware y más.</div><div class="qca">→ Conocer</div></div>
+        <div class="qc" onclick="go('consejos',null)"><div class="qci">🛡️</div><div class="qct">Consejos</div><div class="qcd">7 pasos sin ser experto.</div><div class="qca">→ Aprender</div></div>
+        <div class="qc" onclick="go('minijuegos',null)"><div class="qci">🎮</div><div class="qct">Minijuegos</div><div class="qcd">Aprende jugando.</div><div class="qca">→ Jugar</div></div>
+      </div>
+
     </div>
 
-    <!-- ═══ ESTADÍSTICAS ═══ -->
+<!-- ═══ ESTADÍSTICAS ═══ -->
     <div class="page" id="p-estadisticas">
       <div class="eyebrow">Datos verificados · 2025–2026</div>
       <h1 class="pg-title">Estadísticas Reales</h1>
@@ -825,6 +834,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
       <div class="eyebrow">Aprende jugando</div>
       <h1 class="pg-title">Minijuegos</h1>
       <p class="pg-sub">Tres juegos educativos para reforzar tus conocimientos de ciberseguridad.</p>
+            <div class="quiz-wrap" style="margin-bottom:.7rem">
+        <div class="quiz-head"><h3>🧠 Quiz Rápido</h3><p>5 preguntas · pon a prueba tus conocimientos.</p></div>
+        <div class="qbar-w"><div class="qbar" id="qbar"></div></div>
+        <div id="quiz-cnt"></div>
+      </div>
       <div class="games-grid">
 
         <!-- MEMORIA -->
@@ -865,31 +879,63 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:h
       </div>
     </div>
 
-    <!-- ═══ COMENTARIOS ═══ -->
-    <div class="page" id="p-comentarios">
+    <!-- ═══ RESEÑAS ═══ -->
+    <div class="page" id="p-resenas">
       <div class="eyebrow">Comunidad</div>
-      <h1 class="pg-title">Comentarios</h1>
-      <p class="pg-sub">Déjanos tu opinión, sugerencias o preguntas sobre esta guía. Tu retroalimentación nos ayuda a mejorar.</p>
-      <div class="comment-form">
-        <h3>✍️ Dejar un comentario</h3>
-        <p>Tu nombre y comentario se guardan solo en este navegador.</p>
-        <div class="cf-row">
-          <input type="text" class="cf-input" id="cf-name" placeholder="Tu nombre">
-          <input type="text" class="cf-input" id="cf-topic" placeholder="Tema (opcional)">
+      <h1 class="pg-title">Reseñas</h1>
+      <p class="pg-sub">Deja tu opinión o sugerencia. Tu feedback ayuda a mejorar esta guía.</p>
+
+      <div class="rev-form">
+        <h3>✍️ Escribir reseña</h3>
+        <div class="rev-row">
+          <div>
+            <label class="rev-lbl">Nombre</label>
+            <input class="rev-input" id="rv-name" type="text" placeholder="Tu nombre o apodo">
+          </div>
+          <div>
+            <label class="rev-lbl">Sección favorita</label>
+            <select class="rev-input rev-select" id="rv-section">
+              <option value="">Elige una sección...</option>
+              <option>Fundamentos</option><option>Amenazas</option>
+              <option>Consejos</option><option>Contraseñas</option>
+              <option>Minijuegos</option><option>Herramientas</option>
+              <option>Todo el sitio</option>
+            </select>
+          </div>
         </div>
-        <textarea class="cf-textarea" id="cf-text" placeholder="Escribe tu comentario o sugerencia aquí..."></textarea>
-        <div class="stars-row">
-          <label>Calificación:</label>
-          <span class="star" data-v="1" onclick="setStar(1)">★</span>
-          <span class="star" data-v="2" onclick="setStar(2)">★</span>
-          <span class="star" data-v="3" onclick="setStar(3)">★</span>
-          <span class="star" data-v="4" onclick="setStar(4)">★</span>
-          <span class="star" data-v="5" onclick="setStar(5)">★</span>
+        <label class="rev-lbl">Calificación</label>
+        <div class="stars-wrap">
+          <span class="star" onclick="setStar(1)">★</span>
+          <span class="star" onclick="setStar(2)">★</span>
+          <span class="star" onclick="setStar(3)">★</span>
+          <span class="star" onclick="setStar(4)">★</span>
+          <span class="star" onclick="setStar(5)">★</span>
+          <span class="star-label" id="star-label">Sin calificación</span>
         </div>
-        <button class="cf-submit" onclick="submitComment()">Enviar comentario →</button>
+        <label class="rev-lbl">Comentario o sugerencia</label>
+        <textarea class="rev-textarea" id="rv-text" placeholder="¿Qué te pareció? ¿Qué mejorarías? ¿Aprendiste algo nuevo?"></textarea>
+        <button class="rev-submit" onclick="submitReview()">Enviar reseña →</button>
+        <div class="rev-err" id="rv-err"></div>
       </div>
-      <h3 style="font-size:10.5px;font-weight:700;margin-bottom:.5rem;">💬 Comentarios <span id="comments-count" style="font-family:var(--mono);font-size:10.5px;color:var(--m)">(0)</span></h3>
-      <div id="comments-list"><div class="no-comments">Aún no hay comentarios. ¡Sé el primero! 👆</div></div>
+
+      <div class="rev-summary" id="rev-summary" style="display:none">
+        <div class="rev-avg">
+          <div class="rev-avg-n" id="rev-avg-n">—</div>
+          <div class="rev-avg-stars" id="rev-avg-stars"></div>
+          <div class="rev-avg-lbl" id="rev-avg-lbl">0 reseñas</div>
+        </div>
+        <div class="rev-bars" id="rev-bars"></div>
+      </div>
+
+      <div class="rev-list-header">
+        <span id="rev-count-lbl" style="font-size:10px;font-family:var(--mono);color:var(--m)">0 reseñas</span>
+        <select class="rev-sort" id="rev-sort" onchange="renderReviews()">
+          <option value="newest">Más recientes</option>
+          <option value="highest">Mayor puntuación</option>
+          <option value="lowest">Menor puntuación</option>
+        </select>
+      </div>
+      <div id="rev-list"><div class="rev-empty">Aún no hay reseñas. ¡Sé el primero! 👆</div></div>
     </div>
 
     <!-- ═══ COMPARTIR ═══ -->
@@ -969,7 +1015,7 @@ window.addEventListener('scroll',()=>{
 },{passive:true});
 
 /* ══ NAV ══ */
-const labels={inicio:'Inicio',equipo:'Nuestro equipo',estadisticas:'Estadísticas',fundamentos:'Fundamentos',amenazas:'Amenazas',consejos:'Consejos',contrasenas:'Contraseñas',herramientas:'Herramientas',glosario:'Glosario',minijuegos:'Minijuegos',comentarios:'Comentarios',compartir:'Compartir / QR'};
+const labels={inicio:'Inicio · Equipo',equipo:'Nuestro equipo',estadisticas:'Estadísticas',fundamentos:'Fundamentos',amenazas:'Amenazas',consejos:'Consejos',contrasenas:'Contraseñas',herramientas:'Herramientas',glosario:'Glosario',minijuegos:'Minijuegos',resenas:'Reseñas',compartir:'Compartir / QR'};
 function go(id,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
@@ -1167,6 +1213,88 @@ function shareWA(e){e.preventDefault();const url=document.getElementById('link-u
 function shareTG(e){e.preventDefault();const url=document.getElementById('link-url').value.trim()||window.location.href;const msg=document.getElementById('link-msg').value.trim()||'Guía de Ciberseguridad 🔐';window.open('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(msg),'_blank');}
 function shareMail(e){e.preventDefault();const url=document.getElementById('link-url').value.trim()||window.location.href;const msg=document.getElementById('link-msg').value.trim()||'Te comparto esta guía de ciberseguridad';window.location.href='mailto:?subject='+encodeURIComponent('ShieldNet — CBTIs 189 Ciberseguridad')+'&body='+encodeURIComponent(msg+'\n\n'+url);}
 document.addEventListener('DOMContentLoaded',()=>{const h=window.location.href;document.getElementById('qr-url').value=h;document.getElementById('link-url').value=h;});
+
+/* ══ RESEÑAS ══ */
+let reviews = [], rvStars = 0;
+const starLabels = ['','Muy malo','Malo','Regular','Bueno','Excelente'];
+
+function setStar(v){
+  rvStars = v;
+  document.querySelectorAll('.star').forEach((s,i)=>{
+    s.classList.toggle('on', i < v);
+  });
+  document.getElementById('star-label').textContent = starLabels[v] || 'Sin calificación';
+}
+
+function submitReview(){
+  const name = document.getElementById('rv-name').value.trim();
+  const text = document.getElementById('rv-text').value.trim();
+  const section = document.getElementById('rv-section').value;
+  const err = document.getElementById('rv-err');
+  if(!name){ err.textContent='Por favor escribe tu nombre.'; return; }
+  if(!rvStars){ err.textContent='Por favor selecciona una calificación.'; return; }
+  if(!text){ err.textContent='Por favor escribe un comentario.'; return; }
+  err.textContent='';
+  reviews.unshift({
+    name, text, section, stars: rvStars,
+    time: new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'})
+  });
+  document.getElementById('rv-name').value='';
+  document.getElementById('rv-text').value='';
+  document.getElementById('rv-section').value='';
+  rvStars=0;
+  document.querySelectorAll('.star').forEach(s=>s.classList.remove('on'));
+  document.getElementById('star-label').textContent='Sin calificación';
+  renderReviews();
+  renderSummary();
+  // flash success
+  const btn = document.querySelector('.rev-submit');
+  btn.textContent = '✅ ¡Enviada!';
+  setTimeout(()=>btn.textContent='Enviar reseña →', 2000);
+}
+
+function renderSummary(){
+  const s = document.getElementById('rev-summary');
+  if(!reviews.length){ s.style.display='none'; return; }
+  s.style.display='flex';
+  const avg = reviews.reduce((a,r)=>a+r.stars,0)/reviews.length;
+  document.getElementById('rev-avg-n').textContent = avg.toFixed(1);
+  document.getElementById('rev-avg-stars').textContent = '★'.repeat(Math.round(avg)) + '☆'.repeat(5-Math.round(avg));
+  document.getElementById('rev-avg-lbl').textContent = reviews.length + ' reseña' + (reviews.length!==1?'s':'');
+  // bars
+  const counts = [0,0,0,0,0];
+  reviews.forEach(r=>counts[r.stars-1]++);
+  const max = Math.max(...counts,1);
+  document.getElementById('rev-bars').innerHTML = [5,4,3,2,1].map(n=>{
+    const c=counts[n-1], w=Math.round((c/max)*100);
+    return `<div class="rbar-row"><span>${n}★</span><div class="rbar-wrap"><div class="rbar-fill" style="width:${w}%"></div></div><span>${c}</span></div>`;
+  }).join('');
+}
+
+function renderReviews(){
+  const sort = document.getElementById('rev-sort').value;
+  const list = document.getElementById('rev-list');
+  const countLbl = document.getElementById('rev-count-lbl');
+  if(!reviews.length){
+    list.innerHTML='<div class="rev-empty">Aún no hay reseñas. ¡Sé el primero! 👆</div>';
+    countLbl.textContent='0 reseñas';
+    return;
+  }
+  countLbl.textContent = reviews.length + ' reseña'+(reviews.length!==1?'s':'');
+  let sorted = [...reviews];
+  if(sort==='highest') sorted.sort((a,b)=>b.stars-a.stars);
+  if(sort==='lowest')  sorted.sort((a,b)=>a.stars-b.stars);
+  list.innerHTML = sorted.map(r=>`
+    <div class="rev-card">
+      <div class="rev-card-h">
+        <div><div class="rev-name">${r.name}</div><div class="rev-meta">${r.time}</div></div>
+        <div class="rev-card-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+      </div>
+      ${r.section?`<span class="rev-section-tag">${r.section}</span>`:''}
+      <div class="rev-text">${r.text}</div>
+    </div>`).join('');
+}
+
 </script>
 </body>
 </html>
